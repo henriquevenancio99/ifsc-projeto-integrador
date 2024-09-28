@@ -8,7 +8,12 @@ namespace SalonScheduling.WebApi.Extensions
         public static IActionResult CustomBadRequest(this ControllerBase controllerBase, List<ValidationFailure> errors) =>
             controllerBase.ValidationProblem(
                 new ValidationProblemDetails(
-                    errors.ToDictionary(key => key.PropertyName, value => new[] { value.ErrorMessage })
+                    errors
+                        .GroupBy(g => g.PropertyName)
+                        .ToDictionary(
+                            key => key.Key, 
+                            value => value.Select(s => s.ErrorMessage).ToArray()
+                        )
                 )
             );
     }

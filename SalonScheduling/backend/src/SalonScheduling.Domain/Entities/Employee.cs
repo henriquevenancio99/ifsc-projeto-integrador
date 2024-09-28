@@ -7,10 +7,11 @@ namespace SalonScheduling.Domain.Entities
     {
         public required string Name { get; set; }
         public required Contact Contact { get; set; }
+        public Guid? UserId { get; set; }
 
         public static Employee CreateBy(CreateEmployeeCommand command) => new() 
         { 
-            Name = command.Name, Contact = command.Contact 
+            Name = command.Name!, Contact = command.Contact! 
         };
 
         public static Employee CreateBy(UpdateEmployeeCommand command) => new() 

@@ -1,11 +1,13 @@
-﻿using SalonScheduling.Domain.Commands;
+﻿using SalonScheduling.CrossCutting.Helpers;
+using SalonScheduling.Domain.Commands;
 
 namespace SalonScheduling.Domain.Interfaces.CommandsHandlers
 {
     public interface IEmployeeCommandsHandlers : 
-        IBaseCommandsHandlers,
+        IValidatorHelper,
         ICommandHandler<CreateEmployeeCommand, Guid>,
-        ICommandHandler<UpdateEmployeeCommand, bool>
+        ICommandHandler<UpdateEmployeeCommand, bool>,
+        ICommandHandler<CreateEmplyeeUserCommand, bool>
     {
     }
 }

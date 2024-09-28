@@ -12,9 +12,12 @@ namespace SalonScheduling.Domain.Validators
                 .NotEmpty();
 
             RuleFor(r => r.Contact)
+                .NotNull();
+
+            RuleFor(r => r.Contact)
                 .ChildRules(c => 
                 { 
-                    c.RuleFor(r => r.Email)
+                    c.RuleFor(r => r!.Email)
                         .EmailAddress()
                         .MustAsync(async (_, email, _) => 
                             await employeeRepository.ExistsBy(e => e.Contact.Email == email) is false)

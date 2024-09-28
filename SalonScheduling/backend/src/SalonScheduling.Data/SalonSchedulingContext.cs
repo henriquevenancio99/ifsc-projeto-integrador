@@ -1,12 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using SalonScheduling.Data.Identity;
 using System.Reflection;
 
 namespace SalonScheduling.Data
 {
     public class SalonSchedulingContext(DbContextOptions<SalonSchedulingContext> options, IConfiguration configuration) 
-        : DbContext(options)
+        : IdentityDbContext<User, Role, Guid, IdentityUserClaim<Guid>, UserRole, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>(options)
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
