@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SalonScheduling.Domain.CommandsHandlers;
+using SalonScheduling.Domain.Commands.Handlers;
 using SalonScheduling.Domain.Interfaces.CommandsHandlers;
+using SalonScheduling.Domain.Interfaces.QueriesHandlers;
+using SalonScheduling.Domain.Queries.Handlers;
 
 namespace SalonScheduling.Domain
 {
@@ -8,7 +10,9 @@ namespace SalonScheduling.Domain
     {
         public static IServiceCollection ConfigureDomain(this IServiceCollection services)
         {
-            services.AddCommandsHandlers();
+            services
+                .AddCommandsHandlers()
+                .AddQueriesHandlers();
 
             return services;
         }
@@ -16,6 +20,13 @@ namespace SalonScheduling.Domain
         private static IServiceCollection AddCommandsHandlers(this IServiceCollection services)
         {
             services.AddScoped<IEmployeeCommandsHandlers, EmployeeCommandsHandlers>();
+
+            return services;
+        }
+        
+        private static IServiceCollection AddQueriesHandlers(this IServiceCollection services)
+        {
+            services.AddScoped<IEmployeeQueriesHandlers, EmployeeQueriesHandlers>();
 
             return services;
         }

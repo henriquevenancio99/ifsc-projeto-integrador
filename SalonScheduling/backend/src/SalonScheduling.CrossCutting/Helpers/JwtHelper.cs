@@ -9,8 +9,6 @@ namespace SalonScheduling.CrossCutting.Helpers
 
     public static class JwtHelper
     {
-        public const string AdminRoleName = "admin";
-
         public static string GenerateToken(JwtConfig jwtConfig, string username, IList<string> roles)
         {
             var handler = new JwtSecurityTokenHandler();

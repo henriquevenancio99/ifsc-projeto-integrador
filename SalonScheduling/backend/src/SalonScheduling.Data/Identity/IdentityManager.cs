@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using SalonScheduling.CrossCutting.Constants;
 using SalonScheduling.CrossCutting.Extensions;
 using SalonScheduling.CrossCutting.Helpers;
 using SalonScheduling.Domain.Dtos.Role;
 using SalonScheduling.Domain.Dtos.User;
 using SalonScheduling.Domain.Interfaces;
+using SalonScheduling.Domain.Validators;
 
 namespace SalonScheduling.Data.Identity
 {
@@ -32,23 +34,23 @@ namespace SalonScheduling.Data.Identity
                 .ToArray() ?? [];
         }
 
-        public async Task<string?> Login(LoginDto user)
+        public async Task<string?> Login(LoginDto login)
         {
-            var identityUser = await userManager.FindByNameAsync(user.Username);
+            var identityUser = await userManager.FindByNameAsync(login.Username);
 
             if (identityUser is null)
             {
-                ValidationFailures.Add(new(nameof(user.Username), "Usuário não existe"));
+                ValidationFailures.Add(new(nameof(login.Username), "Usuário não existe"));
                 return default;
             }
 
-            if (await userManager.CheckPasswordAsync(identityUser, user.Password) is false)
+            if (await userManager.CheckPasswordAsync(identityUser, login.Password) is false)
                 return default;
 
             var userRoles = await userManager.GetRolesAsync(identityUser);
             var jwtConfig = configuration.GetJwtConfig();
 
-            return JwtHelper.GenerateToken(jwtConfig, user.Username, userRoles);
+            return JwtHelper.GenerateToken(jwtConfig, login.Username, userRoles);
         }
 
         public async Task<Guid> CreateUser(UserDto user)
@@ -88,7 +90,7 @@ namespace SalonScheduling.Data.Identity
 
         public async Task<UserDto?> CreateAdminUser()
         {
-            if (await userManager.FindByNameAsync(JwtHelper.AdminRoleName) is not null)
+            if (await userManager.FindByNameAsync(Roles.Admin) is not null)
             {
                 ValidationFailures.Add(new("Username", "Usuário administrador já existe"));
                 return default;
@@ -96,7 +98,7 @@ namespace SalonScheduling.Data.Identity
 
             var identityUser = new User
             {
-                UserName = JwtHelper.AdminRoleName,
+                UserName = Roles.Admin,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
 
@@ -106,8 +108,8 @@ namespace SalonScheduling.Data.Identity
             if (result.Succeeded is false)
                 return default;
 
-            if (await roleManager.RoleExistsAsync(JwtHelper.AdminRoleName) is false)
-                await roleManager.CreateAsync(new Role(JwtHelper.AdminRoleName));
+            if (await roleManager.RoleExistsAsync(Roles.Admin) is false)
+                await roleManager.CreateAsync(new Role(Roles.Admin));
 
             var roles = await roleManager.Roles
                 .Select(s => s.Name!)
@@ -130,14 +132,14 @@ namespace SalonScheduling.Data.Identity
             return true;
         }
 
-        public async Task<bool> AssignRoles(Guid id, RoleDto requestBody)
+        public async Task<bool> AssignRoles(Guid id, RoleDto role)
         {
-            var user = await userManager.FindByIdAsync(id.ToString());
+            var identityUser = await userManager.FindByIdAsync(id.ToString());
 
-            if (user is null)
+            if (identityUser is null)
                 return false;
 
-            await AssignRolesIfExists(user, requestBody.Roles);
+            await AssignRolesIfExists(identityUser, role.Roles);
 
             return true;
         }
@@ -151,5 +153,65 @@ namespace SalonScheduling.Data.Identity
 
         public async Task<bool> ExistsByUsername(string username) => 
             await userManager.FindByNameAsync(username) is not null;
+
+        public async Task<bool> ForgetPassword(ForgetPasswordRequestBodyDto requestBody)
+        {
+            var identityUser = await userManager.FindByNameAsync(requestBody.Email);
+
+            if (identityUser is null)
+                return false;
+
+            var message = await GetMessageToResetPassword(identityUser, requestBody);
+
+            await EmailHelper.SendEmail(
+                configuration.GetEmailCredentials(),
+                toEmail: requestBody.Email,
+                subject: "Alterar a senha",
+                message
+            );
+
+            return true;
+        }
+
+        public async Task<bool> ResetPassword(ResetPasswordRequestBodyDto requestBody)
+        {
+            var validatorResult = new ResetPasswordRequestBodyDtoValidator().Validate(requestBody);
+
+            if(validatorResult.IsValid is false)
+            {
+                ValidationFailures = validatorResult.Errors;
+                return false;
+            }
+
+            var user = await userManager.FindByNameAsync(requestBody.Email!);
+
+            if (user is null)
+                return false;
+
+            var resetPasswordResult = await userManager.ResetPasswordAsync(user, requestBody.Token!, requestBody.NewPassword!);
+
+            if (resetPasswordResult.Succeeded is false)
+            {
+                ValidationFailures = resetPasswordResult.Errors
+                    .Select(s => new ValidationFailure(nameof(requestBody.NewPassword), s.Description))
+                    .ToList();
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<string> GetMessageToResetPassword(User identityUser, ForgetPasswordRequestBodyDto requestBody)
+        {
+            var token = await userManager.GeneratePasswordResetTokenAsync(identityUser);
+
+            if (string.IsNullOrEmpty(requestBody.ClientUriToResetPassword))
+                return $"Informe o token a seguir para alterar a senha: {token}";
+
+            var resetPasswordUrl = requestBody.ClientUriToResetPassword + $"?token={token}&email={requestBody.Email}";
+
+            return $"Clique no link a seguir para alterar a senha: {resetPasswordUrl}";
+        }
     }
 }

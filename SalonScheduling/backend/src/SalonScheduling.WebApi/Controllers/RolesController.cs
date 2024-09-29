@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SalonScheduling.CrossCutting.Helpers;
+using SalonScheduling.CrossCutting.Constants;
 using SalonScheduling.Data.Identity;
 using SalonScheduling.Domain.Dtos.Role;
 using System.Data;
@@ -10,7 +10,7 @@ using System.Data;
 namespace SalonScheduling.WebApi.Controllers
 {
     [ApiController]
-    [Authorize(Roles = JwtHelper.AdminRoleName)]
+    [Authorize(Roles = Roles.Admin)]
     public class RolesController(RoleManager<Role> roleManager) : ControllerBase
     {
         [HttpGet("[controller]")]
@@ -44,7 +44,7 @@ namespace SalonScheduling.WebApi.Controllers
         }
 
         [HttpDelete("[controller]/{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -57,7 +57,7 @@ namespace SalonScheduling.WebApi.Controllers
 
             await roleManager.DeleteAsync(role);
 
-            return NoContent();
+            return Ok();
         }
     }
 }

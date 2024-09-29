@@ -3,9 +3,9 @@ using SalonScheduling.Domain.Commands;
 
 namespace SalonScheduling.Domain.Validators
 {
-    public class CreateEmplyeeUserCommandValidator : AbstractValidator<CreateEmplyeeUserCommand>
+    public class CreateEmployeeUserCommandValidator : AbstractValidator<CreateEmplyeeUserCommand>
     {
-        public CreateEmplyeeUserCommandValidator()
+        public CreateEmployeeUserCommandValidator()
         {
             RuleFor(r => r.Username)
                 .NotEmpty();

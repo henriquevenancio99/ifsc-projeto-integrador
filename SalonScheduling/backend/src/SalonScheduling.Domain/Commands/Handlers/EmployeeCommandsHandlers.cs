@@ -1,15 +1,14 @@
 ﻿using FluentValidation.Results;
 using SalonScheduling.CrossCutting.Helpers;
-using SalonScheduling.Domain.Commands;
 using SalonScheduling.Domain.Entities;
 using SalonScheduling.Domain.Interfaces;
 using SalonScheduling.Domain.Interfaces.CommandsHandlers;
 using SalonScheduling.Domain.Interfaces.Repositories;
 using SalonScheduling.Domain.Validators;
 
-namespace SalonScheduling.Domain.CommandsHandlers
+namespace SalonScheduling.Domain.Commands.Handlers
 {
-    public class EmployeeCommandsHandlers(IEmployeeRepository employeeRepository, IIdentityManager identityUserService) : 
+    public class EmployeeCommandsHandlers(IEmployeeRepository employeeRepository, IIdentityManager identityUserService) :
         ValidatorHelper, IEmployeeCommandsHandlers
     {
         public async Task<Guid> Handle(CreateEmployeeCommand command)
@@ -88,13 +87,13 @@ namespace SalonScheduling.Domain.CommandsHandlers
 
         public Task<(bool IsValid, List<ValidationFailure> Errors)> Validate(CreateEmplyeeUserCommand command)
         {
-            var result = new CreateEmplyeeUserCommandValidator().Validate(command);
+            var result = new CreateEmployeeUserCommandValidator().Validate(command);
 
             return Task.FromResult((result.IsValid, result.Errors));
         }
 
         private async Task<bool> CreateEmployeeUser(CreateEmployeeCommand command) =>
-            command.CreateUser is false ||
+            command.CreateUser is null or false ||
             await Handle(new CreateEmplyeeUserCommand(
                 command.Contact!.Email, command.UserPassword, command.UserRoles)) is true;
     }
