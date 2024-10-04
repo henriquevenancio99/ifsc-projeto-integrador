@@ -77,3 +77,7 @@
 >> ![](/docs/digs/BoundedContexts.drawio.png)
 
 <br>
+
+## Arquitetura dos componentes _(In Progress)_
+> ![](/docs/digs/ArquiteturaDosComponentes.drawio.png)
+
