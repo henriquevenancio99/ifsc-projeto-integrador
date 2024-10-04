@@ -1,3 +1,6 @@
+## Casos de Uso
+> ![](/docs/digs/UmlCasosDeUso.drawio.png)
+
 ## Requisitos Funcionais
 
 <details>
@@ -65,9 +68,13 @@
 > - Serviço
 > - Agendamento
 
+> MER _(In Progress)_
+>> ![](/docs/digs/MER.png)
+
 **Bounded Contexts:**
 > - Agendamento
 > - Gerenciamento de Usuários
+>> ![](/docs/digs/BoundedContexts.drawio.png)
 
 <br>
 
