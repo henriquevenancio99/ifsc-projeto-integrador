@@ -4,18 +4,26 @@
 
 Aplicação Web API em ASP.NET Core seguindo os padrões de desenvolvimento RESTful e DDD
 
-Frameworks: 
+Tech Stack
+> Frameworks: 
 > - .NET 8 
 > - ASP .NET Core 
 > - EF Core
 
-Linguagem: C#
+> Linguagem: C#
 
-Componentes:
+> Componentes:
 > - PostgreSQL
 > - Identity
 
-CI/CD
+> CI/CD:
 > - Azure _(TBD)_
 
 <br>
+
+Padrões e Boas práticas:
+> - DDD
+> - RESTful
+> - Clean Code
+> - SOLID
+> - Conventional Comimits
