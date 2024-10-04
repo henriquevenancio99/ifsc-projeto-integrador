@@ -18,7 +18,4 @@ Componentes:
 CI/CD
 > - Azure _(TBD)_
 
-## Arquitetura dos componentes _(In Progress)_
-> ![](/docs/digs/ArquiteturaDosComponentes.drawio.png)
-
 <br>
