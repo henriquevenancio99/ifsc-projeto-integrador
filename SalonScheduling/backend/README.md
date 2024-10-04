@@ -6,7 +6,7 @@ Aplicação Web API em ASP.NET Core seguindo os padrões de desenvolvimento REST
 
 #### Tech Stack
 > **Frameworks**: 
-> - [.NET 8](https://learn.microsoft.com/pt-br/dotnet/core/whats-new/dotnet-8/overview#c-12)
+> - [.NET 8](https://learn.microsoft.com/pt-br/dotnet/core/whats-new/dotnet-8)
 > - [ASP .NET Core](https://learn.microsoft.com/pt-br/aspnet/core/introduction-to-aspnet-core?view=aspnetcore-8.0)
 > - [EF Core](https://learn.microsoft.com/pt-br/dotnet/core/whats-new/dotnet-8/overview#ef-core)
 
