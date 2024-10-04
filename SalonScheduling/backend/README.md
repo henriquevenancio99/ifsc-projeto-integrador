@@ -1,8 +1,8 @@
+[Discovery](/docs/discovery.md)
+
 # Backend
 
 Aplicação Web API em ASP.NET Core seguindo os padrões de desenvolvimento RESTful e DDD
-
-## Tech Stack
 
 Frameworks: 
 > - .NET 8 
