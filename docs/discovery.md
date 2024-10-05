@@ -1,3 +1,14 @@
+# Discovery
+**Status**: Em Progresso
+
+O processo de Discovery consiste em:
+- Identificar as necessidades dos usuários (Casos de Uso);
+- Mapear os Requisitos Funcionais e Não Runcionais;
+- Modelar o Domínio, identificando as Entidades e seus Contextos delimitados (Bounded Context);
+- Refinar a solução que atenda as necessidades dos usuários;
+- Modelar a Arquitetura dos Componentes;
+- Criar Backlog e planejar Sprints.
+
 ## Casos de Uso
 > ![](/docs/digs/UmlCasosDeUso.drawio.png)
 
