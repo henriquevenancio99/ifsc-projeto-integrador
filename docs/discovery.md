@@ -106,13 +106,13 @@ Ator: Sistema
 > - Disponibilidade de Funcionário
 > - Reserva
 
-> MER _(In Progress)_
->> ![](/docs/digs/MER.png)
-
 **Bounded Contexts:**
 > - Agendamento
 > - Gerenciamento de Usuários
 >> ![](/docs/digs/BoundedContexts.drawio.png)
+
+> MER _(In Progress)_
+>> ![](/docs/digs/MER.png)
 
 <br>
 
