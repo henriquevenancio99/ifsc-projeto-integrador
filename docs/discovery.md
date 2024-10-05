@@ -1,57 +1,81 @@
 ## Casos de Uso
 > ![](/docs/digs/UmlCasosDeUso.drawio.png)
 
-## Requisitos Funcionais
+## Análise de Requisitos
 
 <details>
 
-> **RF01**: Autenticação e Autorização de Acesso
-> - O sistema deve implementar o controle de acesso as funcionalidades conforme as permissões dos usuários
+### Requisitos Funcionais (RF)
 
-> **RF02**: Gerenciamento de Permissões de Usuários (Roles)
-> - O sistema deve permitir ao usuário Administrador gerenciar o cadastro de roles
+Ator: Usuário
+> **RF01**: Login
+> - O sistema deve permitir aos usuários realizarem login utilizando suas credenciais (email e senha)
 
-> **RF03**: Geremnciamento de Usuários
-> - O sistema deve permitir ao usuário Administrador gerenciar o cadastro de usuários
+> **RF02**: Esqueceu a Senha
+> - O sistema deve permitir aos usuários recuperarem o acesso redefinindo sua senha
 
-> **RF04**: Login de Usuários
-> - O sistema deve permitir aos usuários realizar login utilizando suas credenciais (email e senha)
+Ator: Usuário Administrador
 
-> **RF05**: Esqueceu a Senha
-> - O sistema deve permitir aos usuários redefinir a senha
+> **RF03**: Geremnciamento de Usuários e Permissões
+> - O sistema deve permitir ao usuário Administrador gerenciar o cadastro de usuários e sias permissões
 
-> **RF06**: Gerenciamento de Funcionários
-> - O sistema deve permitir ao usuário Funcionário ou Administrador cadastrar novos funcionários
+> **RF04**: Gerenciamento de Funcionários
+> - O sistema deve permitir ao usuário Administrador cadastrar novos funcionários
 
-> **RF07**: Gerenciamento de Clientes
-> - O sistema deve permitir ao usuário Funcionário ou Administrador gerenciar o cadastro de clientes
+> **RF05**: Gerenciamento de Clientes
+> - O sistema deve permitir ao usuário Administrador gerenciar o cadastro de clientes
 
-> **RF08**: Gerenciamento de Serviços
+> **RF06**: Gerenciamento de Disponibilidade de Funcionários
+> - O sistema deve permitir ao usuário Administrador gerenciar a disponibilidade dos funcionários
+
+Aror: Usuário Funcionário
+> **RF07**: Gerenciamento de Serviços
 > - O sistema deve permitir ao usuário Funcionário ou Administrador gerenciar o cadastro de serviços
 
-> **RF09**: Agendamento de Serviços
+> **RF08**: Agendamento de Serviços
 > - O sistema deve permitir ao usuário Funcionário ou Administrador agendar serviços para os clientes
 
-> **RF10**: Visualização de Agendamentos
+> **RF09**: Visualização de Agendamentos
 > - O sistema deve permitir ao usuário Funcionário ou Administrador consultar os agendamentos disponíveis
 
-> **RF11**: Cancelamento de Agendamento
+> **RF10**: Cancelamento de Agendamento
 > - O sistema deve permitir ao usuário Funcionário ou Administrador cancelar agendamentos pendentes
 
-> **RF12**: Edição de Agendamentos
+> **RF11**: Edição de Agendamentos
 > - O sistema deve permitir ao usuário Funcionário ou Administrador editar seus agendamentos
 
-> **RF13**: Notificações de Agendamento
-> - O sistema deve notificar os Clientes quando um agendamento for realizado, alterado ou cancelado
+Ator: Usuário Cliente
+> **RF12**: Solicição de Reserva de Agendamento
+> - O sistema deve permitir ao usuário Cliente solicitar a reserva de agendamento
 
-> **RF14**: Consulta de Disponibilidade de Funcionários
-> - O sistema deve permitir aos usuários consultar a disponibilidade dos funcionários
+> **RF13**: Cancelamento de Reserva de Agendamento
+> - O sistema deve permitir ao usuário Cliente cancelar a reserva de agendamento
 
-> **RF15**: Solicitação de Agendamento de Serviços
-> - O sistema deve permitir ao usuário Cliente solicitar agendamento de serviços
+> **RF14**: Solicitação de Cancelamento de Agendamento
+> - O sistema deve permitir ao usuário Cliente solicitar o cancelamento de agendamento
 
-> **RF14**: Relatórios de Agendamentos
-> - O Administrador deve ser capaz de gerar relatórios com os agendamentos realizados, podendo filtrar por período, cliente, funcionário e serviço
+> **RF15**: Visualização de Agendamentos
+> - O sistema deve permitir ao usuário Cliente consultar os detalhes dos seus agendamentos
+
+Ator: Sistema
+> **RF16**: Autenticação e Autorização de Acesso
+> - O sistema deve implementar o controle de acesso as funcionalidades conforme as permissões dos usuários
+
+> **RF17**: Notificações de Agendamento
+> - O sistema deve notificar os Clientes sobre o status do agendamento
+
+<br>
+
+### Requisitos Não Funcionais
+
+> **RNF01**: Autenticação e Autorização
+> - O sistema deve garantir o controle de acesso dos usuários as funcionalidades conforme suas permissões de acesso
+
+> **RNF02**: Design Responsivo
+> - A aplicação PWA deve ser responsiva para se adequar a diferentes resoluções e dispositivos móveis
+
+> **RNF03**: Suporte Offline
+> - A aplicação PWA deve ser capaz de funcionar offline disponibilizando funcionalidades básicas
 
 </details>
 
@@ -60,13 +84,16 @@
 ## Modelagem do Domínio
 
 **Entidades:**
+> - Usuário
+> - Permissões
+> - Agendamento
+> - Serviço
+> - Cliente
+>    - Contato (Value Object)
 > - Funcionário
 >    - Contato (Value Object)
-> - Usuário
->   - Permissões de usuário
-> - Cliente
-> - Serviço
-> - Agendamento
+> - Disponibilidade de Funcionário
+> - Reserva
 
 > MER _(In Progress)_
 >> ![](/docs/digs/MER.png)
@@ -80,4 +107,3 @@
 
 ## Arquitetura dos componentes _(In Progress)_
 > ![](/docs/digs/ArquiteturaDosComponentes.drawio.png)
-
