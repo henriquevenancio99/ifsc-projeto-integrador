@@ -10,6 +10,6 @@ namespace SalonScheduling.Domain.Interfaces.Repositories
         Task Create(TEntity employee);
         Task Delete(Expression<Func<TEntity, bool>> predicate);
         Task<bool> ExistsBy(Expression<Func<TEntity, bool>> predicate);
-        Task Commit();
+        Task<int> Commit();
     }
 }

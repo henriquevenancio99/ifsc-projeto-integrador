@@ -24,16 +24,9 @@ namespace SalonScheduling.Domain.Queries.Handlers
         {
             var employee = await employeeRepository.GetById(id);
 
-            if (employee is null)
-                return default;
-
-            return new EmployeeQuery(
-                employee.Id, 
-                employee.Name, 
-                employee.Contact, 
-                employee.CreatedAt, 
-                employee.UpdatedAt
-            );
+            return employee is not null 
+                ? new(employee.Id, employee.Name, employee.Contact, employee.CreatedAt, employee.UpdatedAt) 
+                : default;
         }
     }
 }

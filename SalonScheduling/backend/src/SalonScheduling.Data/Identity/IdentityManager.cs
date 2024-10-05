@@ -66,8 +66,8 @@ namespace SalonScheduling.Data.Identity
             var identityUser = new User
             {
                 Id = Guid.NewGuid(),
-                UserName = user.Email,
-                Email = user.Email,
+                UserName = user.Username,
+                Email = user.Username,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 EmailConfirmed = true
             };
@@ -108,8 +108,9 @@ namespace SalonScheduling.Data.Identity
             if (result.Succeeded is false)
                 return default;
 
-            if (await roleManager.RoleExistsAsync(Roles.Admin) is false)
-                await roleManager.CreateAsync(new Role(Roles.Admin));
+            foreach (var role in Roles.GetAll())
+                if (await roleManager.RoleExistsAsync(role) is false)
+                    await roleManager.CreateAsync(new Role(role));
 
             var roles = await roleManager.Roles
                 .Select(s => s.Name!)
@@ -117,7 +118,7 @@ namespace SalonScheduling.Data.Identity
 
             await userManager.AddToRolesAsync(identityUser, roles);
 
-            return new(identityUser.UserName, password, [.. roles]);
+            return new(identityUser.UserName, password, Roles.GetAll());
         }
 
         public async Task<bool> DeleteUser(Guid id)

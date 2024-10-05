@@ -25,7 +25,7 @@ namespace SalonScheduling.Data.Repositories
         public async Task<bool> ExistsBy(Expression<Func<TEntity, bool>> predicate) =>
             await dbSet.AnyAsync(predicate);
 
-        public async Task Commit() => 
+        public async Task<int> Commit() => 
             await context.SaveChangesAsync();
     }
 }

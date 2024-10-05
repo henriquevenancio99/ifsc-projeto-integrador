@@ -8,7 +8,7 @@ namespace SalonScheduling.Data.Identity
     {
         public UserDtoValidator(IIdentityManager identityUserService)
         {
-            RuleFor(r => r.Email)
+            RuleFor(r => r.Username)
                 .NotEmpty()
                 .EmailAddress()
                 .MustAsync(async (_, username, _) => await identityUserService.ExistsByUsername(username) is false)

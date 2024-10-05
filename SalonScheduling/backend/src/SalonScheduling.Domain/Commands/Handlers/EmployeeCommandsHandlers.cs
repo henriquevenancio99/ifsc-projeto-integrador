@@ -13,7 +13,7 @@ namespace SalonScheduling.Domain.Commands.Handlers
     {
         public async Task<Guid> Handle(CreateEmployeeCommand command)
         {
-            (var isValid, var errors) = await Validate(command);
+            var (isValid, errors) = await Validate(command);
 
             if (isValid is false)
             {
@@ -34,7 +34,7 @@ namespace SalonScheduling.Domain.Commands.Handlers
 
         public async Task<bool> Handle(UpdateEmployeeCommand command)
         {
-            (var isValid, var errors) = await Validate(command);
+            var (isValid, errors) = await Validate(command);
 
             if (isValid is false)
             {
@@ -44,15 +44,17 @@ namespace SalonScheduling.Domain.Commands.Handlers
 
             var employee = Employee.CreateBy(command);
 
-            await employeeRepository.Update(command.Id, employee);
-            await employeeRepository.Commit();
+            isValid = await employeeRepository.UpdateAndCommit(command.Id, employee) > 0;
 
-            return true;
+            if(isValid is false)
+                ValidationFailures.Add(new(nameof(command.Id), "Usuário não existe"));
+
+            return isValid;
         }
 
         public async Task<bool> Handle(CreateEmplyeeUserCommand command)
         {
-            (var isValid, var errors) = await Validate(command);
+            var (isValid, errors) = await Validate(command);
 
             if (isValid is false)
             {
@@ -94,7 +96,6 @@ namespace SalonScheduling.Domain.Commands.Handlers
 
         private async Task<bool> CreateEmployeeUser(CreateEmployeeCommand command) =>
             command.CreateUser is null or false ||
-            await Handle(new CreateEmplyeeUserCommand(
-                command.Contact!.Email, command.UserPassword, command.UserRoles)) is true;
+            await Handle(new CreateEmplyeeUserCommand(command.Contact!.Email, command.UserPassword, command.UserRoles));
     }
 }

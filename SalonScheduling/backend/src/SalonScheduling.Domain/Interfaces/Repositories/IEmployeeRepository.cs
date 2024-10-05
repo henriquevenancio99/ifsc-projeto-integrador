@@ -4,6 +4,6 @@ namespace SalonScheduling.Domain.Interfaces.Repositories
 {
     public interface IEmployeeRepository : IBaseRepository<Employee>
     {
-        Task Update(Guid id, Employee employee);
+        Task<int> UpdateAndCommit(Guid id, Employee employee);
     }
 }

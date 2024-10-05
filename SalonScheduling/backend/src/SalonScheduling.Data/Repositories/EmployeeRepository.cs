@@ -7,9 +7,9 @@ namespace SalonScheduling.Data.Repositories
     public class EmployeeRepository(SalonSchedulingContext context) 
         : BaseRepository<Employee>(context), IEmployeeRepository
     {
-        public async Task Update(Guid id, Employee employee)
+        public async Task<int> UpdateAndCommit(Guid id, Employee employee)
         {
-            await dbSet
+            return await dbSet
                 .Where(f => f.Id == id)
                 .ExecuteUpdateAsync(setters => setters
                     .SetProperty(s => s.Name, employee.Name)
