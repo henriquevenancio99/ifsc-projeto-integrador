@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/5a863984-5971-45ca-8282-bad479e6f61a)# Discovery
+# Discovery
 **Status**: Em Progresso
 
 O processo de Discovery consiste em:
