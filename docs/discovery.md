@@ -1,11 +1,11 @@
-# Discovery
+![image](https://github.com/user-attachments/assets/5a863984-5971-45ca-8282-bad479e6f61a)# Discovery
 **Status**: Em Progresso
 
 O processo de Discovery consiste em:
 - Identificar as necessidades dos usuários (Casos de Uso);
 - Mapear os Requisitos Funcionais e Não Runcionais;
 - Modelar o Domínio, identificando as Entidades e seus Contextos delimitados (Bounded Context);
-- Refinar a solução que atenda as necessidades dos usuários;
+- Refinar tecnicamente a solução que atenda as necessidades dos usuários;
 - Modelar a Arquitetura dos Componentes;
 - Criar Backlog e planejar Sprints.
 
@@ -83,10 +83,10 @@ Ator: Sistema
 > - O sistema deve garantir o controle de acesso dos usuários as funcionalidades conforme suas permissões de acesso
 
 > **RNF02**: Design Responsivo
-> - A aplicação PWA deve ser responsiva para se adequar a diferentes resoluções e dispositivos móveis
+> - A aplicação deve ser responsiva para se adequar a diferentes resoluções e dispositivos móveis
 
 > **RNF03**: Suporte Offline
-> - A aplicação PWA deve ser capaz de funcionar offline disponibilizando funcionalidades básicas
+> - A aplicação deve ser capaz de funcionar offline disponibilizando funcionalidades básicas
 
 </details>
 
@@ -116,5 +116,22 @@ Ator: Sistema
 
 <br>
 
-## Arquitetura dos componentes _(In Progress)_
+## Refinamento Técnico
+
+Frontend: Aplicação PWA _(Progressive Web App)_ em React
+> Ao desenvolver um frontend em PWA, conseguinmos entregar um site mas com uma experiência de app nativo
+
+Backend: Aplicação Web API em ASP.NET Core seguindo os padrões de desenvolvimento RESTful e DDD
+> O ASP .NET Core é um podereso framework do .NET para desenvolvimento de aplicações web de alto desempenho.
+
+Banco de dados: PostgreSQL
+> O PostgreSQL consiste em um banco de dados relacional. No entnato, é flexível e nos perimte trabalhar com dados não estruturados, caso necessário.
+
+Autenticação e Autorização: ASP .NET Core Identity
+> O Identity é o gerenciador de identidade do ASP .NET Core sendo possível utilizá-lo para Autenticação/Autorização baseado em OAuth 2.0
+
+CI/CD: Azure (TBD)
+> ...
+
+## Arquitetura dos componentes _(Em progresso)_
 > ![](/docs/digs/ArquiteturaDosComponentes.drawio.png)
