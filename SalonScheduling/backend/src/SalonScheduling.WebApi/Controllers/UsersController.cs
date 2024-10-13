@@ -32,7 +32,7 @@ namespace SalonScheduling.WebApi.Controllers
             if(identityManager.HasValidationFailures)
                 return this.CustomBadRequest(identityManager.ValidationFailures);
 
-            return token is null ? Unauthorized() : Ok(token);
+            return token is null ? Unauthorized() : Ok(new { token });
         }
 
         [HttpPost("[controller]:register")]
