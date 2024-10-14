@@ -1,4 +1,4 @@
-[Discovery](/docs/discovery.md)
+[Discovery](/docs/README.md)
 
 # Backend
 
