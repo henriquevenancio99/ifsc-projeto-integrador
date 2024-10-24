@@ -5,6 +5,7 @@
         public const string Admin = "admin";
         public const string Employee = "employee";
         public const string Client = "client";
+        public const string AdminAndEmployee = $"{Admin},{Employee}";
 
         public static string[] GetAll() => [Admin, Employee, Client];
     }

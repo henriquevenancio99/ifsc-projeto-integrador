@@ -9,10 +9,10 @@ using SalonScheduling.WebApi.Extensions;
 namespace SalonScheduling.WebApi.Controllers
 {
     [ApiController]
-    [Authorize(Roles = Roles.Admin)]
     public class UsersController(IIdentityManager identityManager) : ControllerBase
     {
         [HttpGet("[controller]")]
+        [Authorize(Roles = Roles.AdminAndEmployee)]
         [ProducesResponseType(typeof(UserRequestResponseDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -36,6 +36,7 @@ namespace SalonScheduling.WebApi.Controllers
         }
 
         [HttpPost("[controller]:register")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -67,6 +68,7 @@ namespace SalonScheduling.WebApi.Controllers
         }
 
         [HttpDelete("[controller]/{id}")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -75,6 +77,7 @@ namespace SalonScheduling.WebApi.Controllers
             await identityManager.DeleteUser(id) ? Ok() : NotFound();
 
         [HttpPost("[controller]/{id}/roles:assign")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
