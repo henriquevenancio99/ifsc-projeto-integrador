@@ -73,28 +73,28 @@ namespace SalonScheduling.Domain.Commands.Handlers
             return true;
         }
 
-        public async Task<(bool IsValid, List<ValidationFailure> Errors)> Validate(CreateEmployeeCommand command)
+        public virtual async Task<(bool IsValid, List<ValidationFailure> Errors)> Validate(CreateEmployeeCommand command)
         {
             var result = await new CreateEmployeeCommandValidator(employeeRepository).ValidateAsync(command);
 
             return (result.IsValid, result.Errors);
         }
 
-        public Task<(bool IsValid, List<ValidationFailure> Errors)> Validate(UpdateEmployeeCommand command)
+        public virtual Task<(bool IsValid, List<ValidationFailure> Errors)> Validate(UpdateEmployeeCommand command)
         {
             var result = new UpdateEmployeeCommandValidator().Validate(command);
 
             return Task.FromResult((result.IsValid, result.Errors));
         }
 
-        public Task<(bool IsValid, List<ValidationFailure> Errors)> Validate(CreateEmplyeeUserCommand command)
+        public virtual Task<(bool IsValid, List<ValidationFailure> Errors)> Validate(CreateEmplyeeUserCommand command)
         {
             var result = new CreateEmployeeUserCommandValidator().Validate(command);
 
             return Task.FromResult((result.IsValid, result.Errors));
         }
 
-        private async Task<bool> CreateEmployeeUser(CreateEmployeeCommand command) =>
+        public virtual async Task<bool> CreateEmployeeUser(CreateEmployeeCommand command) =>
             command.CreateUser is null or false ||
             await Handle(new CreateEmplyeeUserCommand(command.Contact!.Email, command.UserPassword, command.UserRoles));
     }

@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SalonScheduling.Domain", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SalonScheduling.WebApi", "src\SalonScheduling.WebApi\SalonScheduling.WebApi.csproj", "{8560FD78-9DCB-48D8-9A56-7AB1257BB080}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalonScheduling.CrossCutting", "src\SalonScheduling.CrossCutting\SalonScheduling.CrossCutting.csproj", "{DF943882-8A7B-4DF8-9DA6-FF1174DCB2CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SalonScheduling.CrossCutting", "src\SalonScheduling.CrossCutting\SalonScheduling.CrossCutting.csproj", "{DF943882-8A7B-4DF8-9DA6-FF1174DCB2CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4B303AC4-4BBD-435D-8B62-968DC3F2DC00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalonScheduling.Unit.Tests", "tests\SalonScheduling.Unit.Tests\SalonScheduling.Unit.Tests.csproj", "{872EBA13-8572-49CA-83EC-1450B768D021}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +37,16 @@ Global
 		{DF943882-8A7B-4DF8-9DA6-FF1174DCB2CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF943882-8A7B-4DF8-9DA6-FF1174DCB2CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF943882-8A7B-4DF8-9DA6-FF1174DCB2CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{872EBA13-8572-49CA-83EC-1450B768D021}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{872EBA13-8572-49CA-83EC-1450B768D021}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{872EBA13-8572-49CA-83EC-1450B768D021}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{872EBA13-8572-49CA-83EC-1450B768D021}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{872EBA13-8572-49CA-83EC-1450B768D021} = {4B303AC4-4BBD-435D-8B62-968DC3F2DC00}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DFBCE23F-6184-4758-8866-5AC5A4E7884F}
