@@ -211,7 +211,7 @@ export const User = () => {
         });
       })
       .finally(() => {
-        setLoading(true);
+        setLoading(false);
       });
   };
 

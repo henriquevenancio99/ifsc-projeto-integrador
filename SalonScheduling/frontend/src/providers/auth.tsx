@@ -38,7 +38,9 @@ export const AuthProvider = ({ children }: IProps) => {
             });
 
             setToken(data.token);
+            localStorage.setItem("username", data.username);
             localStorage.setItem("token", data.token);
+            localStorage.setItem("refreshToken", data.refreshToken);
           });
         } else if (response.status == 401 || response.status === 403) {
           toast({

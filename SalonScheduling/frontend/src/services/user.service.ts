@@ -1,7 +1,8 @@
 import { IUser } from "../types/user";
+import { fetchWithAuth } from "../utils/api";
 import { BASE_URL } from "../utils/config";
 
-export const login = async (
+export const login = (
   username: string,
   password: string
 ): Promise<Response> => {
@@ -18,28 +19,20 @@ export const login = async (
 };
 
 export const getAll = (): Promise<Response> => {
-  const localToken = localStorage.getItem("token");
-  const token = `Bearer ${localToken}`;
-  return fetch(`${BASE_URL}/users`, {
+  return fetchWithAuth("/users", {
     method: "GET",
-    headers: {
-      Authorization: token,
-    },
   });
 };
 
-export const createUser = async (
+export const createUser = (
   username: string,
   password: string,
   roles: string[]
 ): Promise<Response> => {
-  const localToken = localStorage.getItem("token");
-  const token = `Bearer ${localToken}`;
-  return fetch(`${BASE_URL}/users:register`, {
+  return fetchWithAuth("/users:register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token,
     },
     body: JSON.stringify({
       username,
@@ -49,25 +42,17 @@ export const createUser = async (
   });
 };
 
-export const deleteUser = async (id: string): Promise<Response> => {
-  const localToken = localStorage.getItem("token");
-  const token = `Bearer ${localToken}`;
-  return fetch(`${BASE_URL}/users/${id}`, {
+export const deleteUser = (id: string): Promise<Response> => {
+  return fetchWithAuth(`/users/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: token,
-    },
   });
 };
 
-export const editUser = async (user: IUser): Promise<Response> => {
-  const localToken = localStorage.getItem("token");
-  const token = `Bearer ${localToken}`;
-  return fetch(`${BASE_URL}/users/${user.id}`, {
+export const editUser = (user: IUser): Promise<Response> => {
+  return fetchWithAuth(`/users/${user.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: token,
     },
     body: JSON.stringify(user),
   });
