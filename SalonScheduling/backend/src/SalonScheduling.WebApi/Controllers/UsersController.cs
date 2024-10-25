@@ -27,12 +27,28 @@ namespace SalonScheduling.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Login([FromBody] LoginDto requestBody)
         {
-            var token = await identityManager.Login(requestBody);
+            var response = await identityManager.Login(requestBody);
 
             if(identityManager.HasValidationFailures)
                 return this.CustomBadRequest(identityManager.ValidationFailures);
 
-            return token is null ? Unauthorized() : Ok(new { token });
+            return response is null ? Unauthorized() : Ok(response);
+        }
+
+        [HttpPost("[controller]:refresh-token")]
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestBodyDto requestBody)
+        {
+            var response = await identityManager.RefreshToken(requestBody);
+
+            if(identityManager.HasValidationFailures)
+                return this.CustomBadRequest(identityManager.ValidationFailures);
+
+            return response is null ? Unauthorized() : Ok(response);
         }
 
         [HttpPost("[controller]:register")]

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using SalonScheduling.Data.Identity;
 using SalonScheduling.Data.Repositories;
 using SalonScheduling.Domain.Interfaces.Repositories;
 using System.Reflection;
@@ -31,6 +32,7 @@ namespace SalonScheduling.Data
         public static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IUserRefreshTokenRepository, UserRefreshTokenRepository>();
         }
     }
 }

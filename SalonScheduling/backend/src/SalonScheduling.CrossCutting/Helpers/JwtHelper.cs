@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace SalonScheduling.CrossCutting.Helpers
@@ -9,11 +10,11 @@ namespace SalonScheduling.CrossCutting.Helpers
 
     public static class JwtHelper
     {
-        public static string GenerateToken(JwtConfig jwtConfig, string username, IList<string> roles)
+        public static (string Token, string RefreshToken) GenerateToken(JwtConfig jwtConfig, string username, IList<string> roles)
         {
             var handler = new JwtSecurityTokenHandler();
 
-            var token = handler.CreateToken(new()
+            var jwtToken = handler.CreateToken(new()
             {
                 Subject = GenerateClaims(username, roles),
                 Expires = DateTime.UtcNow.AddMinutes(15),
@@ -25,7 +26,10 @@ namespace SalonScheduling.CrossCutting.Helpers
                 ),
             });
 
-            return handler.WriteToken(token);
+            var token = handler.WriteToken(jwtToken);
+            var refreshToken = GenerateRefreshToken();
+
+            return (token, refreshToken);
         }
 
         private static ClaimsIdentity GenerateClaims(string username, IList<string> roles)
@@ -40,6 +44,15 @@ namespace SalonScheduling.CrossCutting.Helpers
                 claims.AddClaim(new Claim(ClaimTypes.Role, role));
 
             return claims;
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

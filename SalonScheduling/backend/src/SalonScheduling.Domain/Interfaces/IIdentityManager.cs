@@ -7,7 +7,8 @@ namespace SalonScheduling.Domain.Interfaces
     public interface IIdentityManager : IValidatorHelper
     {
         Task<UserRequestResponseDto[]> GetAllUsersWithRolesAsNoTracking();
-        Task<string?> Login(LoginDto user);
+        Task<TokenRequestResponseDto?> Login(LoginDto user);
+        Task<TokenRequestResponseDto?> RefreshToken(RefreshTokenRequestBodyDto refreshToken);
         Task<Guid> CreateUser(UserDto user);
         Task<UserDto?> CreateAdminUser();
         Task<bool> DeleteUser(Guid id);

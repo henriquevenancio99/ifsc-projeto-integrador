@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SalonScheduling.Domain.Entities;
 using SalonScheduling.Domain.Interfaces.Repositories;
 using System.Linq.Expressions;
 
 namespace SalonScheduling.Data.Repositories
 {
     public abstract class BaseRepository<TEntity>(SalonSchedulingContext context) 
-        : IBaseRepository<TEntity> where TEntity : BaseEntity
+        : IBaseRepository<TEntity> where TEntity : class
     {
         protected DbSet<TEntity> dbSet = context.Set<TEntity>();
 

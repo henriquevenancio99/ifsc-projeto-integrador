@@ -15,6 +15,7 @@ namespace SalonScheduling.Data.Identity
     public class IdentityManager(
         UserManager<User> userManager,
         RoleManager<Role> roleManager,
+        IUserRefreshTokenRepository userRefreshTokenRepository,
         IConfiguration configuration) : ValidatorHelper, IIdentityManager
     {
         public async Task<UserRequestResponseDto[]> GetAllUsersWithRolesAsNoTracking()
@@ -34,7 +35,7 @@ namespace SalonScheduling.Data.Identity
                 .ToArray() ?? [];
         }
 
-        public async Task<string?> Login(LoginDto login)
+        public async Task<TokenRequestResponseDto?> Login(LoginDto login)
         {
             var identityUser = await userManager.FindByNameAsync(login.Username);
 
@@ -47,10 +48,46 @@ namespace SalonScheduling.Data.Identity
             if (await userManager.CheckPasswordAsync(identityUser, login.Password) is false)
                 return default;
 
-            var userRoles = await userManager.GetRolesAsync(identityUser);
-            var jwtConfig = configuration.GetJwtConfig();
+            var (token, refreshToken) = await GetTokens(identityUser);
 
-            return JwtHelper.GenerateToken(jwtConfig, login.Username, userRoles);
+            await userRefreshTokenRepository.RecreateRefreshToken(identityUser, refreshToken);
+
+            await userManager.UpdateAsync(identityUser);
+
+            return new(identityUser.UserName!, token, refreshToken);
+        }
+
+        public async Task<TokenRequestResponseDto?> RefreshToken(RefreshTokenRequestBodyDto requestBody)
+        {
+            var identityUser = await userManager.FindByNameAsync(requestBody.Username);
+
+            if (identityUser is null)
+            {
+                ValidationFailures.Add(new(nameof(requestBody.Username), "Usuário não existe"));
+                return default;
+            }
+
+            var userRefreshToken = await userRefreshTokenRepository.GetByUserId(identityUser.Id);
+            if (userRefreshToken is null)
+            {
+                ValidationFailures.Add(new(nameof(requestBody.Username), "Usuário não possui Refresh Token"));
+                return default;
+            }
+
+            if (userRefreshToken.Validate(requestBody.RefreshToken))
+            {
+                ValidationFailures.Add(new(nameof(requestBody), "Refresh Token inválido"));
+                return default;
+            }
+
+            var (token, newRefreshToken) = await GetTokens(identityUser);
+
+            userRefreshToken.RefreshToken = newRefreshToken;
+            userRefreshToken.Expiration = DateTimeOffset.UtcNow.AddHours(1);
+
+            await userManager.UpdateAsync(identityUser);
+
+            return new(identityUser.UserName!, token, newRefreshToken);
         }
 
         public async Task<Guid> CreateUser(UserDto user)
@@ -213,6 +250,15 @@ namespace SalonScheduling.Data.Identity
             var resetPasswordUrl = requestBody.ClientUriToResetPassword + $"?token={token}&email={requestBody.Email}";
 
             return $"Clique no link a seguir para alterar a senha: {resetPasswordUrl}";
+        }
+
+
+        private async Task<(string Token, string RefreshToken)> GetTokens(User identityUser)
+        {
+            var userRoles = await userManager.GetRolesAsync(identityUser);
+            var jwtConfig = configuration.GetJwtConfig();
+
+            return JwtHelper.GenerateToken(jwtConfig, identityUser.UserName!, userRoles);
         }
     }
 }
