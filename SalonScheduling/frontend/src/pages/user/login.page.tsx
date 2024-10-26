@@ -14,17 +14,18 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { login } from "../../services/user.service";
 import { persistTokens } from "../../services/auth.service";
 
 export const Login = () => {
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const toast = useToast();
+  const location = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +45,9 @@ export const Login = () => {
 
             persistTokens(data);
 
-            navigate("/home");
+            navigate(location.state?.from?.pathname || "/home", {
+              replace: true,
+            });
           });
         } else if (response.status == 401 || response.status === 403) {
           toast({
