@@ -1,12 +1,7 @@
-import { BASE_URL } from "../utils/config";
+import { fetchWithAuth } from "./auth.service";
 
 export const getAllRoles = (): Promise<Response> => {
-  const localToken = localStorage.getItem("token");
-  const token = `Bearer ${localToken}`;
-  return fetch(`${BASE_URL}/roles`, {
+  return fetchWithAuth("/roles", {
     method: "GET",
-    headers: {
-      Authorization: token,
-    },
   });
 };

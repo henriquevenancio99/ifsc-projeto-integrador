@@ -3,3 +3,7 @@ export interface IUser {
   username: string;
   roles: string[];
 }
+
+export interface IEditUser extends IUser {
+  password: string;
+}

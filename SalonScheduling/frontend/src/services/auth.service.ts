@@ -1,7 +1,22 @@
-// import { useNavigate } from "react-router-dom";
-
 import { IToken } from "../types/token";
-import { BASE_URL } from "./config";
+import { BASE_URL } from "../utils/config";
+
+export const isAuthenticated = () => {
+  const token = localStorage.getItem("token");
+  return !!token;
+};
+
+export const persistTokens = (token: IToken) => {
+  localStorage.setItem("username", token.username);
+  localStorage.setItem("token", token.token);
+  localStorage.setItem("refreshToken", token.refreshToken);
+};
+
+export const removeTokens = () => {
+  localStorage.removeItem("username");
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
+};
 
 export const fetchWithAuth = async (
   endpoint: string,
@@ -31,9 +46,7 @@ export const fetchWithAuth = async (
 
     if (refreshResponse.ok) {
       const tokenResponse: IToken = await refreshResponse.json();
-      localStorage.setItem("username", tokenResponse.username);
-      localStorage.setItem("token", tokenResponse.token);
-      localStorage.setItem("refreshToken", tokenResponse.refreshToken);
+      persistTokens(tokenResponse);
 
       options.headers = {
         ...options.headers,
@@ -41,6 +54,8 @@ export const fetchWithAuth = async (
       };
 
       response = await fetch(`${BASE_URL}${endpoint}`, options);
+    } else {
+      window.location.href = "/login";
     }
   }
 

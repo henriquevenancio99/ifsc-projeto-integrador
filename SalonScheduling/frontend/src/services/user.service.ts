@@ -1,5 +1,5 @@
-import { IUser } from "../types/user";
-import { fetchWithAuth } from "../utils/api";
+import { IEditUser } from "../types/user";
+import { fetchWithAuth } from "./auth.service";
 import { BASE_URL } from "../utils/config";
 
 export const login = (
@@ -29,7 +29,7 @@ export const createUser = (
   password: string,
   roles: string[]
 ): Promise<Response> => {
-  return fetchWithAuth("/users:register", {
+  return fetchWithAuth("/users", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export const deleteUser = (id: string): Promise<Response> => {
   });
 };
 
-export const editUser = (user: IUser): Promise<Response> => {
+export const editUser = (user: IEditUser): Promise<Response> => {
   return fetchWithAuth(`/users/${user.id}`, {
     method: "PUT",
     headers: {

@@ -2,31 +2,37 @@ import {
   Button,
   Flex,
   Heading,
-  Input,
   Spacer,
-  Stack,
   StackDivider,
   useToast,
   VStack,
 } from "@chakra-ui/react";
+
 import {
   createUser,
   deleteUser,
   editUser,
   getAll as getAllUsers,
 } from "../../services/user.service";
+
 import { useEffect, useState } from "react";
-import { CustomDrawer } from "../../components/common/custom-drawer/custom-drawer";
 import { IUser } from "../../types/user";
 import { UserTable } from "../../components/user/user-table";
-import { Select } from "chakra-react-select";
 import { IRole } from "../../types/role";
 import { getAllRoles } from "../../services/role.service";
+import { UserDrawer } from "../../components/user/user-drawer";
+import { MdAdd } from "react-icons/md";
+import { DeleteAlert } from "../../components/common/delete-alert/delete-alert";
 
 export const User = () => {
   const toast = useToast();
   const [users, setUsers] = useState<IUser[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<{ [key: string]: boolean }>({
+    userSaveDrawer: false,
+    userEditDrawer: false,
+    userDeleteAlert: false,
+  });
+  const [userId, setUserId] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [roles, setRoles] = useState<IRole[]>([]);
@@ -51,7 +57,6 @@ export const User = () => {
               });
             });
         } else {
-          console.log("else");
           toast({
             title: "Não foi possível obter as permissões de usuário.",
             status: "error",
@@ -71,9 +76,18 @@ export const User = () => {
   }, []);
 
   useEffect(() => {
-    if (isOpen || loading) {
+    if (
+      isOpen["userSaveDrawer"] ||
+      isOpen["userEditDrawer"] ||
+      isOpen["userDeleteAlert"] ||
+      loading
+    ) {
       return;
     }
+
+    setSelectedRoles([]);
+    setUsername("");
+    setUserId("");
 
     getAllUsers()
       .then((response) => {
@@ -84,7 +98,6 @@ export const User = () => {
               setUsers(data);
             })
             .catch(() => {
-              console.log("deserialize");
               toast({
                 title: "Não foi possível obter os usuários.",
                 status: "error",
@@ -93,7 +106,6 @@ export const User = () => {
               });
             });
         } else {
-          console.log("else");
           toast({
             title: "Não foi possível obter os usuários.",
             status: "error",
@@ -115,7 +127,6 @@ export const User = () => {
   const handleOnSave = () => {
     createUser(username, password, selectedRoles)
       .then((response) => {
-        console.log(response);
         if (response.ok) {
           toast({
             title: "Usuário cadastrado com sucesso.",
@@ -123,7 +134,10 @@ export const User = () => {
             duration: 3000,
             isClosable: true,
           });
-          setIsOpen(false);
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["userSaveDrawer"]: false,
+          }));
         } else {
           toast({
             title: "Não foi possível cadastrar o usuário.",
@@ -144,11 +158,15 @@ export const User = () => {
       });
   };
 
-  const handleOnDelete = (id: string) => {
+  const handleConfirmDelete = () => {
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["userDeleteAlert"]: false,
+    }));
+
     setLoading(true);
-    deleteUser(id)
+    deleteUser(userId)
       .then((response) => {
-        console.log(response);
         if (response.ok) {
           toast({
             title: "Usuário exluído com sucesso.",
@@ -179,11 +197,35 @@ export const User = () => {
       });
   };
 
+  const handleOnDelete = (user: IUser) => {
+    setUserId(user.id);
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["userDeleteAlert"]: true,
+    }));
+  };
+
   const handleOnEdit = (user: IUser) => {
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["userEditDrawer"]: true,
+    }));
+
+    setUserId(user.id);
+    setUsername(user.username);
+    setSelectedRoles(user.roles);
+  };
+
+  const handleOnSaveEdit = () => {
     setLoading(true);
-    editUser(user)
+
+    editUser({
+      id: userId,
+      username: username,
+      password: password,
+      roles: selectedRoles,
+    })
       .then((response) => {
-        console.log(response);
         if (response.ok) {
           toast({
             title: "Usuário editado com sucesso.",
@@ -191,7 +233,10 @@ export const User = () => {
             duration: 3000,
             isClosable: true,
           });
-          setIsOpen(false);
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["userEditDrawer"]: false,
+          }));
         } else {
           toast({
             title: "Não foi possível editar usuário.",
@@ -217,47 +262,76 @@ export const User = () => {
 
   return (
     <>
+      <DeleteAlert
+        handleOnDelete={handleConfirmDelete}
+        isOpen={isOpen["userDeleteAlert"]}
+        setIsOpen={(isOpen) =>
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["userDeleteAlert"]: isOpen,
+          }))
+        }
+      />
       <VStack spacing={2} divider={<StackDivider />}>
         <Flex w={"100vw"} p={4}>
           <Heading>Usuários</Heading>
           <Spacer />
-          <Button onClick={() => setIsOpen(true)}>Novo</Button>
+          <Button
+            minW={"10rem"}
+            leftIcon={<MdAdd size={"2rem"} />}
+            onClick={() =>
+              setIsOpen((prevData) => ({
+                ...prevData,
+                ["userSaveDrawer"]: true,
+              }))
+            }
+          >
+            Novo
+          </Button>
         </Flex>
         <UserTable
           users={users}
           loading={loading}
+          currentPage={1}
+          pageSize={10}
+          totalPages={1}
+          onPageChange={() => console.log("MUDOU DE PAGINA")}
           onClickDelete={handleOnDelete}
           onClickEdit={handleOnEdit}
         />
       </VStack>
-      <CustomDrawer isOpen={isOpen} setIsOpen={setIsOpen} onSave={handleOnSave}>
-        <Stack spacing={4}>
-          <Input
-            required
-            type="email"
-            placeholder="Informe o email"
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <Input
-            required
-            type="password"
-            placeholder="Informe a senha"
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Select
-            required
-            placeholder="Selecione as permissões do usuário"
-            isMulti
-            onChange={(selectedRoles) =>
-              setSelectedRoles(selectedRoles.map((m) => m.value))
-            }
-            options={roles.map((m) => ({
-              label: m.name,
-              value: m.id,
-            }))}
-          />
-        </Stack>
-      </CustomDrawer>
+      <UserDrawer
+        isOpen={isOpen["userSaveDrawer"]}
+        roles={roles}
+        selectedRoles={selectedRoles}
+        setIsOpen={(isOpen) =>
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["userSaveDrawer"]: isOpen,
+          }))
+        }
+        setUsername={setUsername}
+        setPassword={setPassword}
+        setSelectedRoles={setSelectedRoles}
+        handleOnSave={handleOnSave}
+      />
+      <UserDrawer
+        isEdit
+        isOpen={isOpen["userEditDrawer"]}
+        username={username}
+        roles={roles}
+        selectedRoles={selectedRoles}
+        setIsOpen={(isOpen) =>
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["userEditDrawer"]: isOpen,
+          }))
+        }
+        setUsername={setUsername}
+        setPassword={setPassword}
+        setSelectedRoles={setSelectedRoles}
+        handleOnSave={handleOnSaveEdit}
+      />
     </>
   );
 };

@@ -11,35 +11,78 @@ import {
   Avatar,
   InputGroup,
   InputRightElement,
+  useToast,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../providers/auth";
+import { login } from "../../services/user.service";
+import { persistTokens } from "../../services/auth.service";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const { isAuthenticated, login } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setLoading(true);
 
-    await login(email, password);
+    login(email, password)
+      .then((response) => {
+        if (response.ok) {
+          response.json().then((data) => {
+            toast({
+              title: "Login realizado com sucesso.",
+              status: "success",
+              duration: 3000,
+              isClosable: true,
+            });
 
-    setLoading(false);
+            persistTokens(data);
+
+            navigate("/home");
+          });
+        } else if (response.status == 401 || response.status === 403) {
+          toast({
+            title: "Erro ao realizar o login.",
+            description: "Usuário ou senha inválido",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        } else {
+          response.json().then((data) => {
+            const errors = Object.values(data.errors).join(", ");
+
+            toast({
+              title: "Erro ao realizar o login.",
+              description:
+                errors || "Verifique suas credenciais e tente novamente",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+          });
+        }
+      })
+      .catch(() => {
+        toast({
+          title: "Erro de conexão.",
+          description:
+            "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/home");
-    }
-  }, [isAuthenticated]);
 
   return (
     <Flex
