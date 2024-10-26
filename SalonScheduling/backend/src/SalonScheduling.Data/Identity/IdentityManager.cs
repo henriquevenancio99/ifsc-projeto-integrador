@@ -9,6 +9,7 @@ using SalonScheduling.Domain.Dtos.Role;
 using SalonScheduling.Domain.Dtos.User;
 using SalonScheduling.Domain.Interfaces;
 using SalonScheduling.Domain.Validators;
+using System.Data;
 
 namespace SalonScheduling.Data.Identity
 {
@@ -182,13 +183,6 @@ namespace SalonScheduling.Data.Identity
             return true;
         }
 
-        private async Task AssignRolesIfExists(User identityUser, string[] roles)
-        {
-            foreach (var role in roles)
-                if (await roleManager.RoleExistsAsync(role))
-                    await userManager.AddToRoleAsync(identityUser, role);
-        }
-
         public async Task<bool> ExistsByUsername(string username) => 
             await userManager.FindByNameAsync(username) is not null;
 
@@ -240,6 +234,46 @@ namespace SalonScheduling.Data.Identity
             return true;
         }
 
+        public async Task Update(Guid id, EditUserDto requestBody)
+        {
+            var identityUser = await userManager.FindByIdAsync(id.ToString());
+
+            if (identityUser is null)
+            {
+                ValidationFailures.Add(new(nameof(requestBody.Username), "Usuário não existe"));
+                return;
+            }
+
+            identityUser.UserName = requestBody.Username;
+            await OverrideRoles(identityUser, requestBody.Roles);
+
+            var result = await userManager.UpdateAsync(identityUser);
+
+            if(result.Succeeded is false)
+            {
+                ValidationFailures = result.Errors
+                    .Select(s => new ValidationFailure(nameof(identityUser), s.Description))
+                    .ToList();
+            }
+        }
+
+        private async Task AssignRolesIfExists(User identityUser, string[] roles)
+        {
+            foreach (var role in roles)
+                if (await roleManager.RoleExistsAsync(role))
+                    await userManager.AddToRoleAsync(identityUser, role);
+        }
+
+        private async Task OverrideRoles(User identityUser, string[] roles)
+        {
+            var currentRoles = await userManager.GetRolesAsync(identityUser);
+
+            if (currentRoles is not null && currentRoles.Count > 0)
+                await userManager.RemoveFromRolesAsync(identityUser, currentRoles);
+
+            await AssignRolesIfExists(identityUser, roles);
+        }
+
         private async Task<string> GetMessageToResetPassword(User identityUser, ForgetPasswordRequestBodyDto requestBody)
         {
             var token = await userManager.GeneratePasswordResetTokenAsync(identityUser);
@@ -251,7 +285,6 @@ namespace SalonScheduling.Data.Identity
 
             return $"Clique no link a seguir para alterar a senha: {resetPasswordUrl}";
         }
-
 
         private async Task<(string Token, string RefreshToken)> GetTokens(User identityUser)
         {

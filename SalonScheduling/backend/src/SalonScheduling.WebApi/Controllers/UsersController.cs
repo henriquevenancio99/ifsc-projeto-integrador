@@ -51,7 +51,7 @@ namespace SalonScheduling.WebApi.Controllers
             return response is null ? Unauthorized() : Ok(response);
         }
 
-        [HttpPost("[controller]:register")]
+        [HttpPost("[controller]")]
         [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -119,6 +119,22 @@ namespace SalonScheduling.WebApi.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestBodyDto requestBody)
         {
             await identityManager.ResetPassword(requestBody);
+
+            if (identityManager.HasValidationFailures)
+                return this.CustomBadRequest(identityManager.ValidationFailures);
+
+            return Ok();
+        }
+
+        [HttpPut("[controller]/{id}")]
+        [Authorize(Roles = Roles.Admin)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] EditUserDto requestBody)
+        {
+            await identityManager.Update(id, requestBody);
 
             if (identityManager.HasValidationFailures)
                 return this.CustomBadRequest(identityManager.ValidationFailures);

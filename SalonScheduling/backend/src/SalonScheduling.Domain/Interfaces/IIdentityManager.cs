@@ -16,5 +16,6 @@ namespace SalonScheduling.Domain.Interfaces
         Task<bool> ExistsByUsername(string username);
         Task<bool> ForgetPassword(ForgetPasswordRequestBodyDto requestBody);
         Task<bool> ResetPassword(ResetPasswordRequestBodyDto requestBody);
+        Task Update(Guid id, EditUserDto requestBody);
     }
 }
