@@ -3,6 +3,7 @@ import { Home } from "../pages/home.page";
 import { Login } from "../pages/user/login.page";
 import { User } from "../pages/user/user.page";
 import { isAuthenticated } from "../services/auth.service";
+import { Employee } from "../pages/employee/employee.page";
 
 const ProtectedRoutes = () => {
   const location = useLocation();
@@ -19,6 +20,7 @@ export const Routes = (
       <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
       <Route path="/users" element={<User />} />
+      <Route path="/employees" element={<Employee />} />
     </Route>
     <Route path="/login" element={<Login />} />
   </>

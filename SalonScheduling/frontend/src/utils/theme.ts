@@ -5,9 +5,9 @@ const config: ThemeConfig = {
   useSystemColorMode: false,
 };
 
-const colors = {
+export const colors = {
   light: {
-    primary: "purple.700",
+    primary: "purple.900",
     secondary: "purple.500",
     tertiary: "purple.300",
     bg: "gray.50",
@@ -15,7 +15,7 @@ const colors = {
   dark: {
     primary: "purple.300",
     secondary: "purple.500",
-    tertiary: "purple.700",
+    tertiary: "purple.900",
     bg: "gray.800",
   },
 };
@@ -88,9 +88,8 @@ const theme = extendTheme({
           },
         }),
       },
-      // Definir 'outline' como a variante padrão
       defaultProps: {
-        variant: "outline", // A variante padrão será 'outline'
+        variant: "outline",
       },
     },
     Link: {
@@ -101,7 +100,26 @@ const theme = extendTheme({
           color:
             props.colorMode === "dark"
               ? colors.dark.secondary
-              : colors.light.secondary, // Cor personalizada ao focar, com base no tema
+              : colors.light.secondary,
+        },
+      }),
+    },
+    Switch: {
+      baseStyle: (props: any) => ({
+        _hover: {
+          textDecoration: "underline",
+          color:
+            props.colorMode === "dark"
+              ? colors.dark.secondary
+              : colors.light.secondary,
+        },
+        track: {
+          _checked: {
+            bg:
+              props.colorMode === "dark"
+                ? colors.dark.primary
+                : colors.light.primary,
+          },
         },
       }),
     },

@@ -7,3 +7,10 @@ export interface IUser {
 export interface IEditUser extends IUser {
   password: string;
 }
+
+export interface IUserState {
+  userId: string;
+  username: string;
+  password: string;
+  selectedRoles: string[];
+}

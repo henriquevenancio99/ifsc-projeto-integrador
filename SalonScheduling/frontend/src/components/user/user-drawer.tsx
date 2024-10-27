@@ -1,18 +1,18 @@
-import { Stack, Input, Text } from "@chakra-ui/react";
+import { Stack, Input, Text, useToast } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
 import { IRole } from "../../types/role";
 import { CustomDrawer } from "../common/custom-drawer/custom-drawer";
+import { useEffect, useState } from "react";
+import { getAllRoles } from "../../services/role.service";
+import { IUserState } from "../../types/user";
 
 interface IProps {
   isEdit?: boolean;
   isOpen: boolean;
   username?: string;
-  roles: IRole[];
   selectedRoles?: string[];
+  updateUserState: (field: keyof IUserState, value: any) => void;
   setIsOpen: (isOpen: boolean) => void;
-  setUsername: (username: string) => void;
-  setPassword: (password: string) => void;
-  setSelectedRoles: (selectedRoles: string[]) => void;
   handleOnSave: () => void;
 }
 
@@ -20,15 +20,52 @@ export const UserDrawer = ({
   isEdit = false,
   isOpen,
   username,
-  roles,
   selectedRoles,
+  updateUserState,
   setIsOpen,
-  setUsername,
-  setPassword,
-  setSelectedRoles,
   handleOnSave,
 }: IProps) => {
+  const [roles, setRoles] = useState<IRole[]>([]);
+  const toast = useToast();
+
   const header = isEdit ? "Editar usuário" : "Novo usuário";
+
+  useEffect(() => {
+    getAllRoles()
+      .then((response) => {
+        if (response.ok) {
+          response
+            .json()
+            .then((data: IRole[]) => {
+              setRoles(data);
+            })
+            .catch(() => {
+              toast({
+                title: "Não foi possível obter as permissões de usuário.",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+              });
+            });
+        } else {
+          toast({
+            title: "Não foi possível obter as permissões de usuário.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+      })
+      .catch(() => {
+        toast({
+          title: "Erro ao obter as permissões de usuário.",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
+  }, []);
+
   return (
     <CustomDrawer
       header={header}
@@ -44,7 +81,7 @@ export const UserDrawer = ({
             type="email"
             placeholder="Informe o email"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => updateUserState("username", e.target.value)}
           />
         </Stack>
         {!isEdit && (
@@ -54,7 +91,7 @@ export const UserDrawer = ({
               required
               type="password"
               placeholder="Informe a senha"
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => updateUserState("password", e.target.value)}
             />
           </Stack>
         )}
@@ -74,7 +111,10 @@ export const UserDrawer = ({
                 }))
             }
             onChange={(selectedOptions) =>
-              setSelectedRoles(selectedOptions.map((m) => m.label))
+              updateUserState(
+                "selectedRoles",
+                selectedOptions.map((m) => m.label)
+              )
             }
             options={roles.map((m) => ({
               label: m.name,

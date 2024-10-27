@@ -10,10 +10,10 @@ using System.Data;
 namespace SalonScheduling.WebApi.Controllers
 {
     [ApiController]
-    [Authorize(Roles = Roles.Admin)]
     public class RolesController(RoleManager<Role> roleManager) : ControllerBase
     {
         [HttpGet("[controller]")]
+        [Authorize(Roles = Roles.AdminAndEmployee)]
         [ProducesResponseType(typeof(RoleRequestResponseDto[]), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -27,6 +27,7 @@ namespace SalonScheduling.WebApi.Controllers
         }
 
         [HttpPost("[controller]")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -44,6 +45,7 @@ namespace SalonScheduling.WebApi.Controllers
         }
 
         [HttpDelete("[controller]/{id}")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

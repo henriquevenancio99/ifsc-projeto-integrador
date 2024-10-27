@@ -16,10 +16,8 @@ import {
 } from "../../services/user.service";
 
 import { useEffect, useState } from "react";
-import { IUser } from "../../types/user";
+import { IUser, IUserState } from "../../types/user";
 import { UserTable } from "../../components/user/user-table";
-import { IRole } from "../../types/role";
-import { getAllRoles } from "../../services/role.service";
 import { UserDrawer } from "../../components/user/user-drawer";
 import { MdAdd } from "react-icons/md";
 import { DeleteAlert } from "../../components/common/delete-alert/delete-alert";
@@ -32,48 +30,22 @@ export const User = () => {
     userEditDrawer: false,
     userDeleteAlert: false,
   });
-  const [userId, setUserId] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [roles, setRoles] = useState<IRole[]>([]);
-  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    getAllRoles()
-      .then((response) => {
-        if (response.ok) {
-          response
-            .json()
-            .then((data: IRole[]) => {
-              setRoles(data);
-            })
-            .catch(() => {
-              toast({
-                title: "Não foi possível obter as permissões de usuário.",
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-              });
-            });
-        } else {
-          toast({
-            title: "Não foi possível obter as permissões de usuário.",
-            status: "error",
-            duration: 3000,
-            isClosable: true,
-          });
-        }
-      })
-      .catch(() => {
-        toast({
-          title: "Erro ao obter as permissões de usuário.",
-          status: "error",
-          duration: 3000,
-          isClosable: true,
-        });
-      });
-  }, []);
+  const [userState, setUserState] = useState<IUserState>({
+    userId: "",
+    username: "",
+    password: "",
+    selectedRoles: [],
+  });
+
+  const updateUserState = (field: keyof IUserState, value: any) => {
+    setUserState((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (
@@ -85,9 +57,10 @@ export const User = () => {
       return;
     }
 
-    setSelectedRoles([]);
-    setUsername("");
-    setUserId("");
+    updateUserState("userId", "");
+    updateUserState("username", "");
+    updateUserState("password", "");
+    updateUserState("selectedRoles", []);
 
     getAllUsers()
       .then((response) => {
@@ -125,7 +98,7 @@ export const User = () => {
   }, [isOpen, loading]);
 
   const handleOnSave = () => {
-    createUser(username, password, selectedRoles)
+    createUser(userState.username, userState.password, userState.selectedRoles)
       .then((response) => {
         if (response.ok) {
           toast({
@@ -165,7 +138,7 @@ export const User = () => {
     }));
 
     setLoading(true);
-    deleteUser(userId)
+    deleteUser(userState.userId)
       .then((response) => {
         if (response.ok) {
           toast({
@@ -198,7 +171,7 @@ export const User = () => {
   };
 
   const handleOnDelete = (user: IUser) => {
-    setUserId(user.id);
+    updateUserState("userId", user.id);
     setIsOpen((prevData) => ({
       ...prevData,
       ["userDeleteAlert"]: true,
@@ -211,19 +184,19 @@ export const User = () => {
       ["userEditDrawer"]: true,
     }));
 
-    setUserId(user.id);
-    setUsername(user.username);
-    setSelectedRoles(user.roles);
+    updateUserState("userId", user.id);
+    updateUserState("username", user.username);
+    updateUserState("selectedRoles", user.roles);
   };
 
   const handleOnSaveEdit = () => {
     setLoading(true);
 
     editUser({
-      id: userId,
-      username: username,
-      password: password,
-      roles: selectedRoles,
+      id: userState.userId,
+      username: userState.username,
+      password: userState.password,
+      roles: userState.selectedRoles,
     })
       .then((response) => {
         if (response.ok) {
@@ -277,7 +250,6 @@ export const User = () => {
           <Heading>Usuários</Heading>
           <Spacer />
           <Button
-            minW={"10rem"}
             leftIcon={<MdAdd size={"2rem"} />}
             onClick={() =>
               setIsOpen((prevData) => ({
@@ -302,34 +274,28 @@ export const User = () => {
       </VStack>
       <UserDrawer
         isOpen={isOpen["userSaveDrawer"]}
-        roles={roles}
-        selectedRoles={selectedRoles}
+        selectedRoles={userState.selectedRoles}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
             ["userSaveDrawer"]: isOpen,
           }))
         }
-        setUsername={setUsername}
-        setPassword={setPassword}
-        setSelectedRoles={setSelectedRoles}
+        updateUserState={updateUserState}
         handleOnSave={handleOnSave}
       />
       <UserDrawer
         isEdit
         isOpen={isOpen["userEditDrawer"]}
-        username={username}
-        roles={roles}
-        selectedRoles={selectedRoles}
+        username={userState.username}
+        selectedRoles={userState.selectedRoles}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
             ["userEditDrawer"]: isOpen,
           }))
         }
-        setUsername={setUsername}
-        setPassword={setPassword}
-        setSelectedRoles={setSelectedRoles}
+        updateUserState={updateUserState}
         handleOnSave={handleOnSaveEdit}
       />
     </>
