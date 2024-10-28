@@ -38,7 +38,12 @@ const theme = extendTheme({
   },
   styles: {
     global: (props: any) => ({
+      html: {
+        h: "100%",
+      },
       body: {
+        display: "block",
+        placeItems: "normal",
         bg: props.colorMode === "dark" ? colors.dark.bg : colors.light.bg,
         color:
           props.colorMode === "dark"
@@ -58,6 +63,15 @@ const theme = extendTheme({
           color: "white",
           _hover: {
             bg:
+              props.colorMode === "dark"
+                ? colors.dark.secondary
+                : colors.light.secondary,
+          },
+        }),
+        outline: (props: any) => ({
+          bg: props.colorMode === "dark" ? colors.dark.bg : colors.light.bg,
+          _hover: {
+            borderColor:
               props.colorMode === "dark"
                 ? colors.dark.secondary
                 : colors.light.secondary,

@@ -1,16 +1,19 @@
 import {
   Button,
-  Flex,
+  Card,
+  CardHeader,
   Heading,
-  Spacer,
-  StackDivider,
   useToast,
-  VStack,
+  Text,
+  HStack,
+  Stack,
+  Divider,
+  SimpleGrid,
 } from "@chakra-ui/react";
 
 import { useEffect, useState } from "react";
 import { MdAdd } from "react-icons/md";
-import { DeleteAlert } from "../../components/common/delete-alert/delete-alert";
+import { DeleteAlert } from "../../components/common/delete-alert";
 import { IEmployeeState, IEmployee } from "../../types/employee";
 import {
   createEmployee,
@@ -20,7 +23,8 @@ import {
 } from "../../services/employee.service";
 
 import { EmployeeDrawer } from "../../components/employee/emplyee-drawer";
-import { EmployeeTable } from "../../components/employee/employee-table";
+import { BiTrash, BiEdit, BiShow } from "react-icons/bi";
+import { CustomModal } from "../../components/common/custom-modal";
 
 export const Employee = () => {
   const toast = useToast();
@@ -29,7 +33,8 @@ export const Employee = () => {
   type DrawerKeys =
     | "employeeSaveDrawer"
     | "employeeEditDrawer"
-    | "employeeDeleteAlert";
+    | "employeeDeleteAlert"
+    | "employeeShowModal";
 
   type IsOpenState = { [key in DrawerKeys]: boolean };
 
@@ -37,23 +42,8 @@ export const Employee = () => {
     employeeSaveDrawer: false,
     employeeEditDrawer: false,
     employeeDeleteAlert: false,
+    employeeShowModal: false,
   });
-
-  const [employeeState, setEmployeeState] = useState<IEmployeeState>({
-    employeeId: "",
-    employeeName: "",
-    employeeEmail: "",
-    employeePhoneNumber: "",
-    password: "",
-    selectedRoles: [],
-  });
-
-  const updateEmployeeState = (field: keyof IEmployeeState, value: any) => {
-    setEmployeeState((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
-  };
 
   const [loading, setLoading] = useState(false);
 
@@ -62,17 +52,11 @@ export const Employee = () => {
       isOpen.employeeSaveDrawer ||
       isOpen.employeeEditDrawer ||
       isOpen.employeeDeleteAlert ||
+      isOpen.employeeShowModal ||
       loading
     ) {
       return;
     }
-
-    updateEmployeeState("employeeId", "");
-    updateEmployeeState("employeeName", "");
-    updateEmployeeState("employeeEmail", "");
-    updateEmployeeState("employeePhoneNumber", "");
-    updateEmployeeState("password", "");
-    updateEmployeeState("selectedRoles", []);
 
     getAllEmployees()
       .then((response) => {
@@ -132,6 +116,13 @@ export const Employee = () => {
             ...prevData,
             ["employeeSaveDrawer"]: false,
           }));
+        } else if (response.status === 403) {
+          toast({
+            title: "Você não possui permissão para executar essa ação.",
+            status: "warning",
+            duration: 3000,
+            isClosable: true,
+          });
         } else {
           toast({
             title: "Não foi possível cadastrar o funcionário.",
@@ -192,24 +183,26 @@ export const Employee = () => {
       });
   };
 
-  const handleOnDelete = (employee: IEmployee) => {
-    updateEmployeeState("employeeId", employee.id);
+  const handleOnDelete = () => {
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["employeeShowModal"]: false,
+    }));
     setIsOpen((prevData) => ({
       ...prevData,
       ["employeeDeleteAlert"]: true,
     }));
   };
 
-  const handleOnEdit = (employee: IEmployee) => {
+  const handleOnEdit = () => {
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["employeeShowModal"]: false,
+    }));
     setIsOpen((prevData) => ({
       ...prevData,
       ["employeeEditDrawer"]: true,
     }));
-
-    updateEmployeeState("employeeId", employee.id);
-    updateEmployeeState("employeeName", employee.name);
-    updateEmployeeState("employeeEmail", employee.contact.email);
-    updateEmployeeState("employeePhoneNumber", employee.contact.phoneNumber);
   };
 
   const handleOnSaveEdit = () => {
@@ -258,45 +251,74 @@ export const Employee = () => {
       });
   };
 
+  const handleOnShow = (employee: IEmployee) => {
+    updateEmployeeState("employeeId", employee?.id);
+    updateEmployeeState("employeeName", employee?.name);
+    updateEmployeeState("employeeEmail", employee?.contact.email);
+    updateEmployeeState("employeePhoneNumber", employee?.contact.phoneNumber);
+
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["employeeShowModal"]: true,
+    }));
+  };
+
+  const [employeeState, setEmployeeState] = useState<IEmployeeState>({
+    employeeId: "",
+    employeeName: "",
+    employeeEmail: "",
+    employeePhoneNumber: "",
+    password: "",
+    selectedRoles: [],
+  });
+
+  const updateEmployeeState = (field: keyof IEmployeeState, value: any) => {
+    setEmployeeState((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
+
   return (
     <>
-      <DeleteAlert
-        handleOnDelete={handleConfirmDelete}
-        isOpen={isOpen["employeeDeleteAlert"]}
-        setIsOpen={(isOpen) =>
-          setIsOpen((prevData) => ({
-            ...prevData,
-            ["employeeDeleteAlert"]: isOpen,
-          }))
-        }
-      />
-      <VStack spacing={2} divider={<StackDivider />}>
-        <Flex w={"100vw"} p={4}>
-          <Heading>Funcionários</Heading>
-          <Spacer />
+      <HStack justifyContent={"space-between"} spacing={2}>
+        <Heading>Funcionários</Heading>
+        <Button
+          leftIcon={<MdAdd size={"2rem"} />}
+          onClick={() =>
+            setIsOpen((prevData) => ({
+              ...prevData,
+              ["employeeSaveDrawer"]: true,
+            }))
+          }
+        >
+          Novo
+        </Button>
+      </HStack>
+      <Divider mt={2} mb={2} />
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
+        {employees.map((m) => (
           <Button
-            leftIcon={<MdAdd size={"2rem"} />}
-            onClick={() =>
-              setIsOpen((prevData) => ({
-                ...prevData,
-                ["employeeSaveDrawer"]: true,
-              }))
-            }
+            key={m.id}
+            variant={"outline"}
+            boxShadow={"xl"}
+            h={"100%"}
+            pr={10}
+            rightIcon={<BiShow size={"2rem"} />}
+            onClick={() => handleOnShow(m)}
           >
-            Novo
+            <Card w={"100%"} bg={"transparent"} boxShadow={"none"}>
+              <CardHeader>
+                <HStack justifyContent={"space-between"}>
+                  <Heading size={"md"} isTruncated>
+                    {m.name}
+                  </Heading>
+                </HStack>
+              </CardHeader>
+            </Card>
           </Button>
-        </Flex>
-        <EmployeeTable
-          employees={employees}
-          loading={loading}
-          currentPage={1}
-          pageSize={10}
-          totalPages={1}
-          onPageChange={() => console.log("MUDOU DE PAGINA")}
-          onClickDelete={handleOnDelete}
-          onClickEdit={handleOnEdit}
-        />
-      </VStack>
+        ))}
+      </SimpleGrid>
       <EmployeeDrawer
         isOpen={isOpen["employeeSaveDrawer"]}
         setIsOpen={(isOpen) =>
@@ -311,10 +333,9 @@ export const Employee = () => {
       <EmployeeDrawer
         isEdit
         isOpen={isOpen["employeeEditDrawer"]}
-        employeeName={employeeState.employeeName}
-        employeeEmail={employeeState.employeeEmail}
-        employeePhoneNumber={employeeState.employeePhoneNumber}
-        selectedRoles={employeeState.selectedRoles}
+        employeeName={employeeState?.employeeName}
+        employeeEmail={employeeState?.employeeEmail}
+        employeePhoneNumber={employeeState?.employeePhoneNumber}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
@@ -324,6 +345,50 @@ export const Employee = () => {
         updateEmployeeField={updateEmployeeState}
         handleOnSave={handleOnSaveEdit}
       />
+      <DeleteAlert
+        handleOnDelete={handleConfirmDelete}
+        isOpen={isOpen["employeeDeleteAlert"]}
+        setIsOpen={(isOpen) =>
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["employeeDeleteAlert"]: isOpen,
+          }))
+        }
+      />
+      <CustomModal
+        header="Detalhes"
+        isOpen={isOpen["employeeShowModal"]}
+        setIsOpen={(isOpen) =>
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["employeeShowModal"]: isOpen,
+          }))
+        }
+      >
+        <Stack>
+          <HStack>
+            <Heading size={"sm"}>Nome:</Heading>
+            <Text>{employeeState.employeeName}</Text>
+          </HStack>
+          <HStack>
+            <Heading size={"sm"}>Email:</Heading>
+            <Text>{employeeState.employeeEmail}</Text>
+          </HStack>
+          <HStack>
+            <Heading size={"sm"}>Celular:</Heading>
+            <Text>{employeeState.employeePhoneNumber}</Text>
+          </HStack>
+          <Divider mt={2} mb={2} />
+          <HStack justify={"end"}>
+            <Button leftIcon={<BiEdit />} onClick={() => handleOnEdit()}>
+              Editar
+            </Button>
+            <Button leftIcon={<BiTrash />} onClick={() => handleOnDelete()}>
+              Deletar
+            </Button>
+          </HStack>
+        </Stack>
+      </CustomModal>
     </>
   );
 };

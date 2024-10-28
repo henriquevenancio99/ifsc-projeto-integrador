@@ -14,7 +14,7 @@ import {
   Box,
   IconButton,
 } from "@chakra-ui/react";
-import { ITableContent } from "../../../types/table";
+import { ITableContent } from "../../types/table";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 
 interface IProps {

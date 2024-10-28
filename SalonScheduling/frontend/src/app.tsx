@@ -1,11 +1,22 @@
-import { Flex } from "@chakra-ui/react";
-import { Navigation } from "./components/common/navigation/navigation";
+import { Stack, Spinner } from "@chakra-ui/react";
+import { Suspense } from "react";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from "react-router-dom";
+
+import { Routes } from "./routes/routes";
 
 const App = () => {
+  const router = createBrowserRouter(createRoutesFromElements(Routes));
+
   return (
-    <Flex w="100vw" h="100vh">
-      <Navigation />
-    </Flex>
+    <Stack w={"100%"} p={4}>
+      <Suspense fallback={<Spinner />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </Stack>
   );
 };
 

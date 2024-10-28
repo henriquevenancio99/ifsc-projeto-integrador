@@ -1,11 +1,14 @@
 import {
   Button,
-  Flex,
+  Card,
+  CardHeader,
+  Divider,
   Heading,
-  Spacer,
-  StackDivider,
+  HStack,
+  SimpleGrid,
+  Text,
+  Stack,
   useToast,
-  VStack,
 } from "@chakra-ui/react";
 
 import {
@@ -17,10 +20,11 @@ import {
 
 import { useEffect, useState } from "react";
 import { IUser, IUserState } from "../../types/user";
-import { UserTable } from "../../components/user/user-table";
 import { UserDrawer } from "../../components/user/user-drawer";
 import { MdAdd } from "react-icons/md";
-import { DeleteAlert } from "../../components/common/delete-alert/delete-alert";
+import { DeleteAlert } from "../../components/common/delete-alert";
+import { BiEdit, BiShow, BiTrash } from "react-icons/bi";
+import { CustomModal } from "../../components/common/custom-modal";
 
 export const User = () => {
   const toast = useToast();
@@ -29,6 +33,7 @@ export const User = () => {
     userSaveDrawer: false,
     userEditDrawer: false,
     userDeleteAlert: false,
+    userShowModal: false,
   });
 
   const [userState, setUserState] = useState<IUserState>({
@@ -52,6 +57,7 @@ export const User = () => {
       isOpen["userSaveDrawer"] ||
       isOpen["userEditDrawer"] ||
       isOpen["userDeleteAlert"] ||
+      isOpen["userShowModal"] ||
       loading
     ) {
       return;
@@ -97,6 +103,18 @@ export const User = () => {
       });
   }, [isOpen, loading]);
 
+  const handleOnShow = (user: IUser) => {
+    console.log(user);
+    updateUserState("userId", user?.id);
+    updateUserState("username", user?.username);
+    updateUserState("selectedRoles", user?.roles);
+
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["userShowModal"]: true,
+    }));
+  };
+
   const handleOnSave = () => {
     createUser(userState.username, userState.password, userState.selectedRoles)
       .then((response) => {
@@ -111,6 +129,13 @@ export const User = () => {
             ...prevData,
             ["userSaveDrawer"]: false,
           }));
+        } else if (response.status === 403) {
+          toast({
+            title: "Você não possui permissão para executar essa ação.",
+            status: "warning",
+            duration: 3000,
+            isClosable: true,
+          });
         } else {
           toast({
             title: "Não foi possível cadastrar o usuário.",
@@ -170,23 +195,26 @@ export const User = () => {
       });
   };
 
-  const handleOnDelete = (user: IUser) => {
-    updateUserState("userId", user.id);
+  const handleOnDelete = () => {
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["userShowModal"]: false,
+    }));
     setIsOpen((prevData) => ({
       ...prevData,
       ["userDeleteAlert"]: true,
     }));
   };
 
-  const handleOnEdit = (user: IUser) => {
+  const handleOnEdit = () => {
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["userShowModal"]: false,
+    }));
     setIsOpen((prevData) => ({
       ...prevData,
       ["userEditDrawer"]: true,
     }));
-
-    updateUserState("userId", user.id);
-    updateUserState("username", user.username);
-    updateUserState("selectedRoles", user.roles);
   };
 
   const handleOnSaveEdit = () => {
@@ -235,43 +263,44 @@ export const User = () => {
 
   return (
     <>
-      <DeleteAlert
-        handleOnDelete={handleConfirmDelete}
-        isOpen={isOpen["userDeleteAlert"]}
-        setIsOpen={(isOpen) =>
-          setIsOpen((prevData) => ({
-            ...prevData,
-            ["userDeleteAlert"]: isOpen,
-          }))
-        }
-      />
-      <VStack spacing={2} divider={<StackDivider />}>
-        <Flex w={"100vw"} p={4}>
-          <Heading>Usuários</Heading>
-          <Spacer />
+      <HStack justifyContent={"space-between"} spacing={2}>
+        <Heading>Usuários</Heading>
+        <Button
+          leftIcon={<MdAdd size={"2rem"} />}
+          onClick={() =>
+            setIsOpen((prevData) => ({
+              ...prevData,
+              ["userSaveDrawer"]: true,
+            }))
+          }
+        >
+          Novo
+        </Button>
+      </HStack>
+      <Divider mt={2} mb={2} />
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
+        {users.map((m) => (
           <Button
-            leftIcon={<MdAdd size={"2rem"} />}
-            onClick={() =>
-              setIsOpen((prevData) => ({
-                ...prevData,
-                ["userSaveDrawer"]: true,
-              }))
-            }
+            key={m.id}
+            variant={"outline"}
+            boxShadow={"xl"}
+            h={"100%"}
+            pr={10}
+            rightIcon={<BiShow size={"2rem"} />}
+            onClick={() => handleOnShow(m)}
           >
-            Novo
+            <Card w={"100%"} bg={"transparent"} boxShadow={"none"}>
+              <CardHeader>
+                <HStack justifyContent={"space-between"}>
+                  <Heading size={"md"} isTruncated>
+                    {m.username}
+                  </Heading>
+                </HStack>
+              </CardHeader>
+            </Card>
           </Button>
-        </Flex>
-        <UserTable
-          users={users}
-          loading={loading}
-          currentPage={1}
-          pageSize={10}
-          totalPages={1}
-          onPageChange={() => console.log("MUDOU DE PAGINA")}
-          onClickDelete={handleOnDelete}
-          onClickEdit={handleOnEdit}
-        />
-      </VStack>
+        ))}
+      </SimpleGrid>
       <UserDrawer
         isOpen={isOpen["userSaveDrawer"]}
         selectedRoles={userState.selectedRoles}
@@ -298,6 +327,46 @@ export const User = () => {
         updateUserState={updateUserState}
         handleOnSave={handleOnSaveEdit}
       />
+      <DeleteAlert
+        handleOnDelete={handleConfirmDelete}
+        isOpen={isOpen["userDeleteAlert"]}
+        setIsOpen={(isOpen) =>
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["userDeleteAlert"]: isOpen,
+          }))
+        }
+      />
+      <CustomModal
+        header="Detalhes"
+        isOpen={isOpen["userShowModal"]}
+        setIsOpen={(isOpen) =>
+          setIsOpen((prevData) => ({
+            ...prevData,
+            ["userShowModal"]: isOpen,
+          }))
+        }
+      >
+        <Stack>
+          <HStack>
+            <Heading size={"sm"}>Email:</Heading>
+            <Text>{userState.username}</Text>
+          </HStack>
+          <HStack>
+            <Heading size={"sm"}>Permissões:</Heading>
+            <Text>{userState.selectedRoles.join(", ")}</Text>
+          </HStack>
+          <Divider mt={2} mb={2} />
+          <HStack justify={"end"}>
+            <Button leftIcon={<BiEdit />} onClick={() => handleOnEdit()}>
+              Editar
+            </Button>
+            <Button leftIcon={<BiTrash />} onClick={() => handleOnDelete()}>
+              Deletar
+            </Button>
+          </HStack>
+        </Stack>
+      </CustomModal>
     </>
   );
 };

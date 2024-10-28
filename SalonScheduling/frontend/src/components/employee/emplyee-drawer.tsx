@@ -1,7 +1,7 @@
 import { Stack, Input, Text, useToast, Switch } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
 import { IRole } from "../../types/role";
-import { CustomDrawer } from "../common/custom-drawer/custom-drawer";
+import { CustomDrawer } from "../common/custom-drawer";
 import { useEffect, useState } from "react";
 import { getAllRoles } from "../../services/role.service";
 import { IEmployeeState } from "../../types/employee";
