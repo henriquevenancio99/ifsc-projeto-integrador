@@ -75,7 +75,7 @@ export const UserDrawer = ({
     >
       <Stack spacing={"2rem"}>
         <Stack>
-          <Text>Email:</Text>
+          <Text>Username:</Text>
           <Input
             required
             type="email"

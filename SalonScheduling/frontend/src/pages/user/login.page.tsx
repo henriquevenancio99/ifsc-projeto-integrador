@@ -7,11 +7,13 @@ import {
   Heading,
   FormHelperText,
   Link,
-  Flex,
   Avatar,
   InputGroup,
   InputRightElement,
   useToast,
+  Center,
+  Spacer,
+  VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -88,13 +90,7 @@ export const Login = () => {
   };
 
   return (
-    <Flex
-      direction="column"
-      w="100vw"
-      h="100vh"
-      justify="center"
-      alignItems="center"
-    >
+    <VStack pt={"10vh"}>
       <Avatar />
       <Heading>Login</Heading>
       <Stack
@@ -146,6 +142,6 @@ export const Login = () => {
       <Box>
         Não tem conta? <Link href="#">Cadastre-se</Link>
       </Box>
-    </Flex>
+    </VStack>
   );
 };

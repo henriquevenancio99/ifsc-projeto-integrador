@@ -25,6 +25,8 @@ import {
 import { EmployeeDrawer } from "../../components/employee/emplyee-drawer";
 import { BiTrash, BiEdit, BiShow } from "react-icons/bi";
 import { CustomModal } from "../../components/common/custom-modal";
+import { getErrorMessages } from "../../utils/error-response";
+import IErrorResponse from "../../types/error-response";
 
 export const Employee = () => {
   const toast = useToast();
@@ -123,6 +125,18 @@ export const Employee = () => {
             duration: 3000,
             isClosable: true,
           });
+        } else if (response.status == 400) {
+          response.json().then((data: IErrorResponse) => {
+            const errorMessages = getErrorMessages(data);
+
+            toast({
+              title: "Não foi possível cadastrar o funcionário.",
+              status: "error",
+              duration: 3000,
+              description: errorMessages,
+              isClosable: true,
+            });
+          });
         } else {
           toast({
             title: "Não foi possível cadastrar o funcionário.",
@@ -159,6 +173,18 @@ export const Employee = () => {
             status: "success",
             duration: 3000,
             isClosable: true,
+          });
+        } else if (response.status == 400) {
+          response.json().then((data: IErrorResponse) => {
+            const errorMessages = getErrorMessages(data);
+
+            toast({
+              title: "Não foi possível excluir funcionário.",
+              status: "error",
+              duration: 3000,
+              description: errorMessages,
+              isClosable: true,
+            });
           });
         } else {
           toast({
@@ -228,6 +254,18 @@ export const Employee = () => {
             ...prevData,
             ["employeeEditDrawer"]: false,
           }));
+        } else if (response.status == 400) {
+          response.json().then((data: IErrorResponse) => {
+            const errorMessages = getErrorMessages(data);
+
+            toast({
+              title: "Não foi possível editar funcionário.",
+              status: "error",
+              duration: 3000,
+              description: errorMessages,
+              isClosable: true,
+            });
+          });
         } else {
           toast({
             title: "Não foi possível editar funcionário.",

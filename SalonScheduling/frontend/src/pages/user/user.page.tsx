@@ -25,6 +25,8 @@ import { MdAdd } from "react-icons/md";
 import { DeleteAlert } from "../../components/common/delete-alert";
 import { BiEdit, BiShow, BiTrash } from "react-icons/bi";
 import { CustomModal } from "../../components/common/custom-modal";
+import IErrorResponse from "../../types/error-response";
+import { getErrorMessages } from "../../utils/error-response";
 
 export const User = () => {
   const toast = useToast();
@@ -136,6 +138,18 @@ export const User = () => {
             duration: 3000,
             isClosable: true,
           });
+        } else if (response.status == 400) {
+          response.json().then((data: IErrorResponse) => {
+            const errorMessages = getErrorMessages(data);
+
+            toast({
+              title: "Não foi possível cadastrar o usuário.",
+              status: "error",
+              duration: 3000,
+              description: errorMessages,
+              isClosable: true,
+            });
+          });
         } else {
           toast({
             title: "Não foi possível cadastrar o usuário.",
@@ -171,6 +185,18 @@ export const User = () => {
             status: "success",
             duration: 3000,
             isClosable: true,
+          });
+        } else if (response.status == 400) {
+          response.json().then((data: IErrorResponse) => {
+            const errorMessages = getErrorMessages(data);
+
+            toast({
+              title: "Não foi possível excluir o usuário.",
+              status: "error",
+              duration: 3000,
+              description: errorMessages,
+              isClosable: true,
+            });
           });
         } else {
           toast({
@@ -238,6 +264,18 @@ export const User = () => {
             ...prevData,
             ["userEditDrawer"]: false,
           }));
+        } else if (response.status == 400) {
+          response.json().then((data: IErrorResponse) => {
+            const errorMessages = getErrorMessages(data);
+
+            toast({
+              title: "Não foi possível editar o usuário.",
+              status: "error",
+              duration: 3000,
+              description: errorMessages,
+              isClosable: true,
+            });
+          });
         } else {
           toast({
             title: "Não foi possível editar usuário.",
@@ -349,7 +387,7 @@ export const User = () => {
       >
         <Stack>
           <HStack>
-            <Heading size={"sm"}>Email:</Heading>
+            <Heading size={"sm"}>Username:</Heading>
             <Text>{userState.username}</Text>
           </HStack>
           <HStack>

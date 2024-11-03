@@ -14,3 +14,9 @@ export interface IUserState {
   password: string;
   selectedRoles: string[];
 }
+
+export interface IErrorDictionary {
+  [field: string]: string[];
+}
+
+
