@@ -1,14 +1,16 @@
-import { Navigate, Outlet, Route, useLocation } from "react-router-dom";
+import { Navigate, Route, useLocation } from "react-router-dom";
 import { Home } from "../pages/home.page";
 import { Login } from "../pages/user/login.page";
 import { User } from "../pages/user/user.page";
 import { isAuthenticated } from "../services/auth.service";
 import { Employee } from "../pages/employee/employee.page";
 
+import { Layout } from "../components/common/layout";
+
 const ProtectedRoutes = () => {
   const location = useLocation();
   return isAuthenticated() ? (
-    <Outlet />
+    <Layout />
   ) : (
     <Navigate to={"/login"} state={{ from: location }} replace />
   );
