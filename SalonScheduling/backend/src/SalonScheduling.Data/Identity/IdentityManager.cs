@@ -244,6 +244,14 @@ namespace SalonScheduling.Data.Identity
                 return;
             }
 
+            var validatorResult = await new UserDtoValidator(this).ValidateAsync(requestBody);
+
+            if (validatorResult.IsValid is false)
+            {
+                ValidationFailures = validatorResult.Errors;
+                return;
+            }
+
             identityUser.UserName = requestBody.Username;
             await OverrideRoles(identityUser, requestBody.Roles);
 
