@@ -27,18 +27,19 @@ import { BiTrash, BiEdit, BiShow } from "react-icons/bi";
 import { CustomModal } from "../../components/common/custom-modal";
 import { getErrorMessages } from "../../utils/error-response";
 import IErrorResponse from "../../types/error-response";
+import { RenderWithLoading } from "../../components/common/render-with-loading";
 
-export const Employee = () => {
+type DrawerKeys =
+  | "employeeSaveDrawer"
+  | "employeeEditDrawer"
+  | "employeeDeleteAlert"
+  | "employeeShowModal";
+
+type IsOpenState = { [key in DrawerKeys]: boolean };
+
+const Employee = () => {
   const toast = useToast();
   const [employees, setEmployees] = useState<IEmployee[]>([]);
-
-  type DrawerKeys =
-    | "employeeSaveDrawer"
-    | "employeeEditDrawer"
-    | "employeeDeleteAlert"
-    | "employeeShowModal";
-
-  type IsOpenState = { [key in DrawerKeys]: boolean };
 
   const [isOpen, setIsOpen] = useState<IsOpenState>({
     employeeSaveDrawer: false,
@@ -49,16 +50,27 @@ export const Employee = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [employeeState, setEmployeeState] = useState<IEmployeeState>({
+    employeeId: "",
+    employeeName: "",
+    employeeEmail: "",
+    employeePhoneNumber: "",
+    password: "",
+    selectedRoles: [],
+  });
+
   useEffect(() => {
     if (
       isOpen.employeeSaveDrawer ||
       isOpen.employeeEditDrawer ||
       isOpen.employeeDeleteAlert ||
-      isOpen.employeeShowModal ||
-      loading
+      isOpen.employeeShowModal
     ) {
       return;
     }
+
+    console.log("entrou pra buscar de novo: ", loading);
+    setLoading(true);
 
     getAllEmployees()
       .then((response) => {
@@ -92,8 +104,11 @@ export const Employee = () => {
           duration: 3000,
           isClosable: true,
         });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, [isOpen, loading]);
+  }, [isOpen]);
 
   const handleOnSave = () => {
     createEmployee({
@@ -301,15 +316,6 @@ export const Employee = () => {
     }));
   };
 
-  const [employeeState, setEmployeeState] = useState<IEmployeeState>({
-    employeeId: "",
-    employeeName: "",
-    employeeEmail: "",
-    employeePhoneNumber: "",
-    password: "",
-    selectedRoles: [],
-  });
-
   const updateEmployeeState = (field: keyof IEmployeeState, value: any) => {
     setEmployeeState((prevData) => ({
       ...prevData,
@@ -334,29 +340,31 @@ export const Employee = () => {
         </Button>
       </HStack>
       <Divider mt={2} mb={2} />
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
-        {employees.map((m) => (
-          <Button
-            key={m.id}
-            variant={"outline"}
-            boxShadow={"xl"}
-            h={"100%"}
-            pr={10}
-            rightIcon={<BiShow size={"2rem"} />}
-            onClick={() => handleOnShow(m)}
-          >
-            <Card w={"100%"} bg={"transparent"} boxShadow={"none"}>
-              <CardHeader>
-                <HStack justifyContent={"space-between"}>
-                  <Heading size={"md"} isTruncated>
-                    {m.name}
-                  </Heading>
-                </HStack>
-              </CardHeader>
-            </Card>
-          </Button>
-        ))}
-      </SimpleGrid>
+      <RenderWithLoading loading={loading}>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
+          {employees.map((m) => (
+            <Button
+              key={m.id}
+              variant={"outline"}
+              boxShadow={"xl"}
+              h={"100%"}
+              pr={10}
+              rightIcon={<BiShow size={"2rem"} />}
+              onClick={() => handleOnShow(m)}
+            >
+              <Card w={"100%"} bg={"transparent"} boxShadow={"none"}>
+                <CardHeader>
+                  <HStack justifyContent={"space-between"}>
+                    <Heading size={"md"} isTruncated>
+                      {m.name}
+                    </Heading>
+                  </HStack>
+                </CardHeader>
+              </Card>
+            </Button>
+          ))}
+        </SimpleGrid>
+      </RenderWithLoading>
       <EmployeeDrawer
         isOpen={isOpen["employeeSaveDrawer"]}
         setIsOpen={(isOpen) =>
@@ -430,3 +438,5 @@ export const Employee = () => {
     </>
   );
 };
+
+export default Employee;

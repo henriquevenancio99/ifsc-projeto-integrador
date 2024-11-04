@@ -27,8 +27,9 @@ import { BiEdit, BiShow, BiTrash } from "react-icons/bi";
 import { CustomModal } from "../../components/common/custom-modal";
 import IErrorResponse from "../../types/error-response";
 import { getErrorMessages } from "../../utils/error-response";
+import { RenderWithLoading } from "../../components/common/render-with-loading";
 
-export const User = () => {
+const User = () => {
   const toast = useToast();
   const [users, setUsers] = useState<IUser[]>([]);
   const [isOpen, setIsOpen] = useState<{ [key: string]: boolean }>({
@@ -59,8 +60,7 @@ export const User = () => {
       isOpen["userSaveDrawer"] ||
       isOpen["userEditDrawer"] ||
       isOpen["userDeleteAlert"] ||
-      isOpen["userShowModal"] ||
-      loading
+      isOpen["userShowModal"]
     ) {
       return;
     }
@@ -69,6 +69,8 @@ export const User = () => {
     updateUserState("username", "");
     updateUserState("password", "");
     updateUserState("selectedRoles", []);
+
+    setLoading(true);
 
     getAllUsers()
       .then((response) => {
@@ -102,8 +104,11 @@ export const User = () => {
           duration: 3000,
           isClosable: true,
         });
+      })
+      .finally(() => {
+        setLoading(false);
       });
-  }, [isOpen, loading]);
+  }, [isOpen]);
 
   const handleOnShow = (user: IUser) => {
     console.log(user);
@@ -316,29 +321,31 @@ export const User = () => {
         </Button>
       </HStack>
       <Divider mt={2} mb={2} />
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
-        {users.map((m) => (
-          <Button
-            key={m.id}
-            variant={"outline"}
-            boxShadow={"xl"}
-            h={"100%"}
-            pr={10}
-            rightIcon={<BiShow size={"2rem"} />}
-            onClick={() => handleOnShow(m)}
-          >
-            <Card w={"100%"} bg={"transparent"} boxShadow={"none"}>
-              <CardHeader>
-                <HStack justifyContent={"space-between"}>
-                  <Heading size={"md"} isTruncated>
-                    {m.username}
-                  </Heading>
-                </HStack>
-              </CardHeader>
-            </Card>
-          </Button>
-        ))}
-      </SimpleGrid>
+      <RenderWithLoading loading={loading}>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
+          {users.map((m) => (
+            <Button
+              key={m.id}
+              variant={"outline"}
+              boxShadow={"xl"}
+              h={"100%"}
+              pr={10}
+              rightIcon={<BiShow size={"2rem"} />}
+              onClick={() => handleOnShow(m)}
+            >
+              <Card w={"100%"} bg={"transparent"} boxShadow={"none"}>
+                <CardHeader>
+                  <HStack justifyContent={"space-between"}>
+                    <Heading size={"md"} isTruncated>
+                      {m.username}
+                    </Heading>
+                  </HStack>
+                </CardHeader>
+              </Card>
+            </Button>
+          ))}
+        </SimpleGrid>
+      </RenderWithLoading>
       <UserDrawer
         isOpen={isOpen["userSaveDrawer"]}
         selectedRoles={userState.selectedRoles}
@@ -408,3 +415,5 @@ export const User = () => {
     </>
   );
 };
+
+export default User;

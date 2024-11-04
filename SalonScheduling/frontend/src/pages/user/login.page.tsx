@@ -11,8 +11,6 @@ import {
   InputGroup,
   InputRightElement,
   useToast,
-  Center,
-  Spacer,
   VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
@@ -20,7 +18,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { login } from "../../services/user.service";
 import { persistTokens } from "../../services/auth.service";
 
-export const Login = () => {
+const Login = () => {
   const toast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -145,3 +143,5 @@ export const Login = () => {
     </VStack>
   );
 };
+
+export default Login;

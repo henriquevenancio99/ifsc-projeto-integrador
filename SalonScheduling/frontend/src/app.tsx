@@ -1,4 +1,4 @@
-import { Spinner } from "@chakra-ui/react";
+import { Center, Spinner } from "@chakra-ui/react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -6,11 +6,16 @@ import {
 } from "react-router-dom";
 
 import { Routes } from "./routes/routes";
+import { Suspense } from "react";
 
 const App = () => {
   const router = createBrowserRouter(createRoutesFromElements(Routes));
 
-  return <RouterProvider router={router} fallbackElement={<Spinner />} />;
+  return (
+    <Suspense fallback={<Center h={"100vh"}><Spinner /></Center>}>
+      <RouterProvider router={router} />
+    </Suspense>
+  );
 };
 
 export default App;
