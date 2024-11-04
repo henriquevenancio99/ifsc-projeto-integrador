@@ -62,9 +62,14 @@ export const LayoutContent = ({ linkItems, children }: ILayoutContentProps) => {
         lg: "15vw",
       }}
     >
-      <GridItem area={"header"} bg={"gray.200"} borderRadius={4} mb={4} p={4}>
+      <GridItem
+        area={"header"}
+        bg={"gray.200"}
+        p={"2vh"}
+        mb={{ base: isOpen ? "auto" : "2vh", md: "2vh" }}
+      >
         <HStack justifyContent={{ base: "space-between", md: "center" }}>
-          <Heading size={{base: "md", md: "lg"}}>Salon Scheduling</Heading>
+          <Heading size={{ base: "md", md: "lg" }}>Salon Scheduling</Heading>
           <IconButton
             display={{ base: "flex", md: "none" }}
             onClick={() => setIsOpen(!isOpen)}
@@ -76,20 +81,24 @@ export const LayoutContent = ({ linkItems, children }: ILayoutContentProps) => {
           />
         </HStack>
       </GridItem>
-      <GridItem area={"nav"} bg={"gray.200"} borderRadius={4}>
+      <GridItem
+        area={"nav"}
+        bg={"gray.200"}
+        borderRadius={4}
+        h={{ base: isOpen ? "100vh" : "auto", md: "88svh" }}
+      >
         <VStack
           alignItems={"start"}
           display={{ base: "none", md: "flex" }}
-          h="86vh"
           pt={"2vh"}
-          pb={"4vh"}
         >
           <Heading
             size={"lg"}
-            alignSelf={"center"}
+            pl={"1rem"}
+            pb={"1vh"}
             display={{ base: "none", md: "flex" }}
           >
-            Menu
+            Menu:
           </Heading>
           {linkItems.map((link) => (
             <NavItem
@@ -113,7 +122,7 @@ export const LayoutContent = ({ linkItems, children }: ILayoutContentProps) => {
           </VStack>
         )}
       </GridItem>
-      <GridItem area={"main"} ml={"2vw"}>
+      <GridItem area={"main"} pl={4} pr={4} display={isOpen ? "none" : "block"}>
         {!isOpen && children}
       </GridItem>
     </Grid>
