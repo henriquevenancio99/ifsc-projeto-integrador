@@ -1,70 +1,67 @@
+import React, { useEffect, useState } from "react";
+import { forgetPassword, resetPassword } from "../../services/user.service";
 import {
-  Box,
   Button,
   FormControl,
-  Input,
-  Stack,
-  Heading,
   FormHelperText,
-  Link,
-  Avatar,
+  Heading,
+  Input,
   InputGroup,
   InputRightElement,
+  Link,
+  Stack,
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { login } from "../../services/user.service";
-import { persistTokens } from "../../services/auth.service";
 
-const Login = () => {
+const ResetPassword = () => {
+  const [loading, setLoading] = useState(false);
   const toast = useToast();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [token, setToken] = useState("");
+
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const emailParam = urlParams.get("email");
+    const tokenParam = urlParams.get("token");
+
+    if (emailParam && tokenParam) {
+      setEmail(emailParam);
+      setToken(decodeURIComponent(tokenParam));
+    }
+  }, [location]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setLoading(true);
-
-    login(email, password)
+    resetPassword(email, token, newPassword)
       .then((response) => {
         if (response.ok) {
-          response.json().then((data) => {
-            toast({
-              title: "Login realizado com sucesso.",
-              status: "success",
-              duration: 3000,
-              isClosable: true,
-            });
-
-            persistTokens(data);
-
-            navigate(location.state?.from?.pathname || "/home", {
-              replace: true,
-            });
-          });
-        } else if (response.status == 401 || response.status === 403) {
           toast({
-            title: "Erro ao realizar o login.",
-            description: "Usuário ou senha inválido",
-            status: "error",
-            duration: 3000,
+            title: "Sua senha foi alterada com sucesso.",
+            description: "Faça login novamente para acessar sua conta",
+            status: "success",
+            duration: 5000,
             isClosable: true,
+          });
+
+          navigate(location.state?.from?.pathname || "/login", {
+            replace: true,
           });
         } else {
           response.json().then((data) => {
             const errors = Object.values(data.errors).join(", ");
 
             toast({
-              title: "Erro ao realizar o login.",
-              description:
-                errors || "Verifique suas credenciais e tente novamente",
+              title: "Erro ao solicitar alteração da senha.",
+              description: errors,
               status: "error",
               duration: 3000,
               isClosable: true,
@@ -89,8 +86,7 @@ const Login = () => {
 
   return (
     <VStack pt={"10vh"}>
-      <Avatar />
-      <Heading>Login</Heading>
+      <Heading>Alterar a senha</Heading>
       <Stack
         onSubmit={handleSubmit}
         as="form"
@@ -107,17 +103,17 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             type="email"
-            placeholder="Informe seu email"
+            placeholder="Confirme seu email"
           />
         </FormControl>
         <FormControl id="password">
           <InputGroup>
             <Input
               required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
               type={showPassword ? "text" : "password"}
-              placeholder="Informe sua senha"
+              placeholder="Informe a sua nova senha"
             />
             <InputRightElement w="4.5rem">
               <Button
@@ -129,19 +125,13 @@ const Login = () => {
               </Button>
             </InputRightElement>
           </InputGroup>
-          <FormHelperText textAlign="right">
-            <Link href="/forget-password">Esqueceu a senha?</Link>
-          </FormHelperText>
         </FormControl>
         <Button isLoading={loading} type="submit" width="full">
-          Login
+          Resetar senha
         </Button>
       </Stack>
-      <Box>
-        Não tem conta? <Link href="#">Cadastre-se</Link>
-      </Box>
     </VStack>
   );
 };
 
-export default Login;
+export default ResetPassword;

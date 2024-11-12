@@ -57,3 +57,35 @@ export const editUser = (user: IEditUser): Promise<Response> => {
     body: JSON.stringify(user),
   });
 };
+
+export const forgetPassword = (email: string): Promise<Response> => {
+  return fetch(`${BASE_URL}/users:forget-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      clientUriToResetPassword: "http:localhost:5173/reset-password",
+    }),
+  });
+};
+
+export const resetPassword = (
+  email: string,
+  token: string,
+  newPassword: string
+): Promise<Response> => {
+  return fetch(`${BASE_URL}/users:reset-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      token,
+      newPassword,
+      confirmedPassword: newPassword,
+    }),
+  });
+};
