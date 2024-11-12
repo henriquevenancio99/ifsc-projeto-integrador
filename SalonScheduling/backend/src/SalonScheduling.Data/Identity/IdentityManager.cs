@@ -244,7 +244,7 @@ namespace SalonScheduling.Data.Identity
                 return;
             }
 
-            var validatorResult = await new UserDtoValidator(this).ValidateAsync(requestBody);
+            var validatorResult = new EditUserDtoValidator().Validate(requestBody);
 
             if (validatorResult.IsValid is false)
             {
@@ -289,7 +289,9 @@ namespace SalonScheduling.Data.Identity
             if (string.IsNullOrEmpty(requestBody.ClientUriToResetPassword))
                 return $"Informe o token a seguir para alterar a senha: {token}";
 
-            var resetPasswordUrl = requestBody.ClientUriToResetPassword + $"?token={token}&email={requestBody.Email}";
+            var encodedToken = Uri.EscapeDataString(token);
+
+            var resetPasswordUrl = requestBody.ClientUriToResetPassword + $"?token={encodedToken}&email={requestBody.Email}";
 
             return $"Clique no link a seguir para alterar a senha: {resetPasswordUrl}";
         }
