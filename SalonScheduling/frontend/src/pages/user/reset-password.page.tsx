@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { forgetPassword, resetPassword } from "../../services/user.service";
+import { resetPassword } from "../../services/user.service";
 import {
   Button,
   FormControl,
-  FormHelperText,
   Heading,
   Input,
   InputGroup,
   InputRightElement,
-  Link,
   Stack,
   useToast,
   VStack,

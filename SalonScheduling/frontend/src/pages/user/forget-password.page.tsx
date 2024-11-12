@@ -61,7 +61,7 @@ const ForgetPassword = () => {
 
   return (
     <VStack pt={"10vh"}>
-      <Heading>Recuperação de conta</Heading>
+      <Heading>Recuperar acesso</Heading>
       <Stack
         onSubmit={handleSubmit}
         as="form"
@@ -82,7 +82,7 @@ const ForgetPassword = () => {
           />
         </FormControl>
         <Button isLoading={loading} type="submit" width="full">
-          Recuperar
+          Enviar
         </Button>
       </Stack>
     </VStack>
