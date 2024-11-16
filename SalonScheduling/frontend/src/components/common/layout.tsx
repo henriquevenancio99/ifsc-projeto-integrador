@@ -11,6 +11,7 @@ import {
 import { MdMenu, MdWork, MdManageAccounts, MdMenuOpen } from "react-icons/md";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
+import { LogoutButton } from "./logout-button";
 
 interface ILinkItem {
   name: string;
@@ -85,12 +86,13 @@ export const LayoutContent = ({ linkItems, children }: ILayoutContentProps) => {
         area={"nav"}
         bg={"gray.200"}
         borderRadius={4}
-        h={{ base: isOpen ? "100vh" : "auto", md: "88svh" }}
+        h={{ base: isOpen ? "90vh" : "auto", md: "88vh" }}
       >
         <VStack
           alignItems={"start"}
           display={{ base: "none", md: "flex" }}
           pt={"2vh"}
+          h={"86vh"}
         >
           <Heading
             size={"lg"}
@@ -100,17 +102,19 @@ export const LayoutContent = ({ linkItems, children }: ILayoutContentProps) => {
           >
             Menu:
           </Heading>
-          {linkItems.map((link) => (
-            <NavItem
-              key={link.name}
-              name={link.name}
-              icon={link.icon}
-              path={link.path}
-            />
-          ))}
+          {!isOpen &&
+            linkItems.map((link) => (
+              <NavItem
+                key={link.name}
+                name={link.name}
+                icon={link.icon}
+                path={link.path}
+              />
+            ))}
+          {!isOpen && <LogoutButton />}
         </VStack>
         {isOpen && (
-          <VStack alignItems={"start"} w={"full"}>
+          <VStack alignItems={"start"} h={"86vh"} w={"full"}>
             {linkItems.map((link) => (
               <NavItem
                 key={link.name}
@@ -119,6 +123,7 @@ export const LayoutContent = ({ linkItems, children }: ILayoutContentProps) => {
                 path={link.path}
               />
             ))}
+            {isOpen && <LogoutButton />}
           </VStack>
         )}
       </GridItem>
