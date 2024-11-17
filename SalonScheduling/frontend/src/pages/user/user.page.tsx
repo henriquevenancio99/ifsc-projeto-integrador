@@ -28,6 +28,7 @@ import { CustomModal } from "../../components/common/custom-modal";
 import IErrorResponse from "../../types/error-response";
 import { getErrorMessages } from "../../utils/error-response";
 import { RenderWithLoading } from "../../components/common/render-with-loading";
+import { getUsername, refreshToken } from "../../services/auth.service";
 
 const User = () => {
   const toast = useToast();
@@ -269,6 +270,27 @@ const User = () => {
             ...prevData,
             ["userEditDrawer"]: false,
           }));
+
+          if (getUsername() === userState.username) {
+            refreshToken().then((token) => {
+              if (token) {
+                toast({
+                  title: "Suas credenciais foram atualizadas com sucesso.",
+                  status: "success",
+                  duration: 3000,
+                  isClosable: true,
+                });
+              } else {
+                toast({
+                  title: "Não foi possível atualizar suas credenciais.",
+                  status: "warning",
+                  description: "Recomendamos que faça login novamente.",
+                  duration: 3000,
+                  isClosable: true,
+                });
+              }
+            });
+          }
         } else if (response.status == 400) {
           response.json().then((data: IErrorResponse) => {
             const errorMessages = getErrorMessages(data);

@@ -22,7 +22,7 @@ export const fetchWithAuth = async (
   endpoint: string,
   options: RequestInit
 ): Promise<Response> => {
-  const token = localStorage.getItem("token");
+  let token = localStorage.getItem("token");
 
   let response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
@@ -33,31 +33,42 @@ export const fetchWithAuth = async (
   });
 
   if (response.status === 401) {
-    const refreshResponse = await fetch(`${BASE_URL}/users:refresh-token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: localStorage.getItem("username"),
-        refreshToken: localStorage.getItem("refreshToken"),
-      }),
-    });
+    token = await refreshToken();
 
-    if (refreshResponse.ok) {
-      const tokenResponse: IToken = await refreshResponse.json();
-      persistTokens(tokenResponse);
-
+    if (token) {
       options.headers = {
         ...options.headers,
-        Authorization: `Bearer ${tokenResponse.token}`,
+        Authorization: `Bearer ${token}`,
       };
 
       response = await fetch(`${BASE_URL}${endpoint}`, options);
-    } else {
-      window.location.href = "/login";
     }
   }
 
   return response;
 };
+
+export const refreshToken = async () => {
+  const refreshResponse = await fetch(`${BASE_URL}/users:refresh-token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username: localStorage.getItem("username"),
+      refreshToken: localStorage.getItem("refreshToken"),
+    }),
+  });
+
+  if (refreshResponse.ok) {
+    const tokenResponse: IToken = await refreshResponse.json();
+
+    persistTokens(tokenResponse);
+
+    return tokenResponse.token;
+  }
+
+  return "";
+};
+
+export const getUsername = () => localStorage.getItem("username");
