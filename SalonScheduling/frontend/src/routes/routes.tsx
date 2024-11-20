@@ -4,6 +4,7 @@ import { isAuthenticated } from "../services/auth.service";
 import { Layout } from "../components/common/layout";
 import ForgetPassword from "../pages/user/forget-password.page";
 import ResetPassword from "../pages/user/reset-password.page";
+import Client from "../pages/client/client.page";
 
 const Login = lazy(() => import("../pages/user/login.page"));
 const Home = lazy(() => import("../pages/home.page"));
@@ -29,6 +30,7 @@ export const Routes = (
       <Route path="/home" element={<Home />} />
       <Route path="/users" element={<User />} />
       <Route path="/employees" element={<Employee />} />
+      <Route path="/clients" element={<Client />} />
     </Route>
   </>
 );

@@ -2,87 +2,87 @@ import {
   Button,
   Card,
   CardHeader,
-  Heading,
-  useToast,
-  Text,
-  HStack,
-  Stack,
   Divider,
+  Heading,
+  HStack,
   SimpleGrid,
+  Text,
+  Stack,
+  useToast,
 } from "@chakra-ui/react";
 
+import {
+  createClient,
+  deleteClient,
+  editClient,
+  getAllClients,
+} from "../../services/client.service";
+
 import { useEffect, useState } from "react";
+import { IClient, IClientState } from "../../types/client";
 import { MdAdd } from "react-icons/md";
 import { DeleteAlert } from "../../components/common/delete-alert";
-import { IEmployeeState, IEmployee } from "../../types/employee";
-import {
-  createEmployee,
-  deleteEmployee,
-  editEmployee,
-  getAllEmployees,
-} from "../../services/employee.service";
-
-import { EmployeeDrawer } from "../../components/employee/emplyee-drawer";
-import { BiTrash, BiEdit, BiShow } from "react-icons/bi";
+import { BiEdit, BiShow, BiTrash } from "react-icons/bi";
 import { CustomModal } from "../../components/common/custom-modal";
-import { getErrorMessages } from "../../utils/error-response";
 import IErrorResponse from "../../types/error-response";
+import { getErrorMessages } from "../../utils/error-response";
 import { RenderWithLoading } from "../../components/common/render-with-loading";
+import { ClientDrawer } from "../../components/client/client-drawer";
 
-type DrawerKeys =
-  | "employeeSaveDrawer"
-  | "employeeEditDrawer"
-  | "employeeDeleteAlert"
-  | "employeeShowModal";
-
-type IsOpenState = { [key in DrawerKeys]: boolean };
-
-const Employee = () => {
+const Client = () => {
   const toast = useToast();
-  const [employees, setEmployees] = useState<IEmployee[]>([]);
-
-  const [isOpen, setIsOpen] = useState<IsOpenState>({
-    employeeSaveDrawer: false,
-    employeeEditDrawer: false,
-    employeeDeleteAlert: false,
-    employeeShowModal: false,
+  const [clients, setClients] = useState<IClient[]>([]);
+  const [isOpen, setIsOpen] = useState<{ [key: string]: boolean }>({
+    clientSaveDrawer: false,
+    clientEditDrawer: false,
+    clientDeleteAlert: false,
+    clientShowModal: false,
   });
+
+  const [clientState, setClientState] = useState<IClientState>({
+    clientId: "",
+    clientName: "",
+    clientEmail: "",
+    clientPhoneNumber: "",
+  });
+
+  const updateClientState = (field: keyof IClientState, value: any) => {
+    setClientState((prevData) => ({
+      ...prevData,
+      [field]: value,
+    }));
+  };
 
   const [loading, setLoading] = useState(false);
 
-  const [employeeState, setEmployeeState] = useState<IEmployeeState>({
-    employeeId: "",
-    employeeName: "",
-    employeeEmail: "",
-    employeePhoneNumber: "",
-    password: "",
-    selectedRoles: [],
-  });
-
   useEffect(() => {
     if (
-      isOpen.employeeSaveDrawer ||
-      isOpen.employeeEditDrawer ||
-      isOpen.employeeDeleteAlert ||
-      isOpen.employeeShowModal
+      isOpen["clientSaveDrawer"] ||
+      isOpen["clientEditDrawer"] ||
+      isOpen["clientDeleteAlert"] ||
+      isOpen["clientShowModal"]
     ) {
       return;
     }
 
-    console.log("entrou pra buscar de novo: ", loading);
+    updateClientState("clientId", "");
+    updateClientState("clientName", "");
+    updateClientState("clientEmail", "");
+    updateClientState("clientPhoneNumber", "");
+
     setLoading(true);
 
-    getAllEmployees()
+    getAllClients()
       .then((response) => {
         if (response.ok) {
           response
             .json()
-            .then((data: IEmployee[]) => {
-              setEmployees(data);
+            .then((data: IClient[]) => {
+              setClients(data);
             })
             .catch(() => {
               toast({
-                title: "Não foi possível obter os funcionários.",
+                title: "Não foi possível obter os clientes.",
                 status: "error",
                 duration: 3000,
                 isClosable: true,
@@ -90,7 +90,7 @@ const Employee = () => {
             });
         } else {
           toast({
-            title: "Não foi possível obter os funcionários.",
+            title: "Não foi possível obter os clientes.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -99,7 +99,7 @@ const Employee = () => {
       })
       .catch(() => {
         toast({
-          title: "Erro ao obter os funcionários.",
+          title: "Erro ao obter os clientes.",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -110,28 +110,37 @@ const Employee = () => {
       });
   }, [isOpen]);
 
+  const handleOnShow = (client: IClient) => {
+    updateClientState("clientId", client?.id);
+    updateClientState("clientName", client?.name);
+    updateClientState("clientEmail", client?.contact.email);
+    updateClientState("clientPhoneNumber", client?.contact.phoneNumber);
+
+    setIsOpen((prevData) => ({
+      ...prevData,
+      ["clientShowModal"]: true,
+    }));
+  };
+
   const handleOnSave = () => {
-    createEmployee({
-      name: employeeState.employeeName,
+    createClient({
+      name: clientState.clientName,
       contact: {
-        email: employeeState.employeeEmail,
-        phoneNumber: employeeState.employeePhoneNumber,
+        email: clientState.clientEmail,
+        phoneNumber: clientState.clientPhoneNumber,
       },
-      createUser: !!employeeState.password,
-      userPassword: employeeState.password,
-      userRoles: employeeState.selectedRoles,
     })
       .then((response) => {
         if (response.ok) {
           toast({
-            title: "Funcionário cadastrado com sucesso.",
+            title: "Cliente cadastrado com sucesso.",
             status: "success",
             duration: 3000,
             isClosable: true,
           });
           setIsOpen((prevData) => ({
             ...prevData,
-            ["employeeSaveDrawer"]: false,
+            ["clientSaveDrawer"]: false,
           }));
         } else if (response.status === 403) {
           toast({
@@ -145,7 +154,7 @@ const Employee = () => {
             const errorMessages = getErrorMessages(data);
 
             toast({
-              title: "Não foi possível cadastrar o funcionário.",
+              title: "Não foi possível cadastrar o cliente.",
               status: "error",
               duration: 3000,
               description: errorMessages,
@@ -154,7 +163,7 @@ const Employee = () => {
           });
         } else {
           toast({
-            title: "Não foi possível cadastrar o funcionário.",
+            title: "Não foi possível cadastrar o cliente.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -163,7 +172,7 @@ const Employee = () => {
       })
       .catch((error) => {
         toast({
-          title: "Erro ao cadastrar funcionário.",
+          title: "Erro ao cadastrar cliente.",
           status: "error",
           description: error,
           duration: 3000,
@@ -175,11 +184,11 @@ const Employee = () => {
   const handleConfirmDelete = () => {
     setLoading(true);
 
-    deleteEmployee(employeeState.employeeId)
+    deleteClient(clientState.clientId)
       .then((response) => {
         if (response.ok) {
           toast({
-            title: "Funcionário exluído com sucesso.",
+            title: "Cliente exluído com sucesso.",
             status: "success",
             duration: 3000,
             isClosable: true,
@@ -189,7 +198,7 @@ const Employee = () => {
             const errorMessages = getErrorMessages(data);
 
             toast({
-              title: "Não foi possível excluir funcionário.",
+              title: "Não foi possível excluir o cliente.",
               status: "error",
               duration: 3000,
               description: errorMessages,
@@ -198,7 +207,7 @@ const Employee = () => {
           });
         } else {
           toast({
-            title: "Não foi possível excluir funcionário.",
+            title: "Não foi possível excluir cliente.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -207,7 +216,7 @@ const Employee = () => {
       })
       .catch((error) => {
         toast({
-          title: "Erro ao excluir funcionário.",
+          title: "Erro ao excluir cliente.",
           status: "error",
           description: error,
           duration: 3000,
@@ -217,8 +226,9 @@ const Employee = () => {
       .finally(() => {
         setIsOpen((prevData) => ({
           ...prevData,
-          ["employeeDeleteAlert"]: false,
+          ["clientDeleteAlert"]: false,
         }));
+
         setLoading(false);
       });
   };
@@ -226,54 +236,54 @@ const Employee = () => {
   const handleOnDelete = () => {
     setIsOpen((prevData) => ({
       ...prevData,
-      ["employeeShowModal"]: false,
+      ["clientShowModal"]: false,
     }));
     setIsOpen((prevData) => ({
       ...prevData,
-      ["employeeDeleteAlert"]: true,
+      ["clientDeleteAlert"]: true,
     }));
   };
 
   const handleOnEdit = () => {
     setIsOpen((prevData) => ({
       ...prevData,
-      ["employeeShowModal"]: false,
+      ["clientShowModal"]: false,
     }));
     setIsOpen((prevData) => ({
       ...prevData,
-      ["employeeEditDrawer"]: true,
+      ["clientEditDrawer"]: true,
     }));
   };
 
   const handleOnSaveEdit = () => {
     setLoading(true);
 
-    editEmployee({
-      id: employeeState.employeeId,
-      name: employeeState.employeeName,
+    editClient({
+      id: clientState.clientId,
+      name: clientState.clientName,
       contact: {
-        email: employeeState.employeeEmail,
-        phoneNumber: employeeState.employeePhoneNumber,
+        email: clientState.clientEmail,
+        phoneNumber: clientState.clientPhoneNumber,
       },
     })
       .then((response) => {
         if (response.ok) {
           toast({
-            title: "Funcionário editado com sucesso.",
+            title: "Cliente editado com sucesso.",
             status: "success",
             duration: 3000,
             isClosable: true,
           });
           setIsOpen((prevData) => ({
             ...prevData,
-            ["employeeEditDrawer"]: false,
+            ["clientEditDrawer"]: false,
           }));
         } else if (response.status == 400) {
           response.json().then((data: IErrorResponse) => {
             const errorMessages = getErrorMessages(data);
 
             toast({
-              title: "Não foi possível editar funcionário.",
+              title: "Não foi possível editar o cliente.",
               status: "error",
               duration: 3000,
               description: errorMessages,
@@ -282,7 +292,7 @@ const Employee = () => {
           });
         } else {
           toast({
-            title: "Não foi possível editar funcionário.",
+            title: "Não foi possível editar cliente.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -291,7 +301,7 @@ const Employee = () => {
       })
       .catch((error) => {
         toast({
-          title: "Erro ao editar funcionário.",
+          title: "Erro ao editar cliente.",
           status: "error",
           description: error,
           duration: 3000,
@@ -303,35 +313,16 @@ const Employee = () => {
       });
   };
 
-  const handleOnShow = (employee: IEmployee) => {
-    updateEmployeeState("employeeId", employee?.id);
-    updateEmployeeState("employeeName", employee?.name);
-    updateEmployeeState("employeeEmail", employee?.contact.email);
-    updateEmployeeState("employeePhoneNumber", employee?.contact.phoneNumber);
-
-    setIsOpen((prevData) => ({
-      ...prevData,
-      ["employeeShowModal"]: true,
-    }));
-  };
-
-  const updateEmployeeState = (field: keyof IEmployeeState, value: any) => {
-    setEmployeeState((prevData) => ({
-      ...prevData,
-      [field]: value,
-    }));
-  };
-
   return (
     <>
       <HStack justifyContent={"space-between"} spacing={2}>
-        <Heading>Funcionários</Heading>
+        <Heading>Clientes</Heading>
         <Button
           leftIcon={<MdAdd size={"2rem"} />}
           onClick={() =>
             setIsOpen((prevData) => ({
               ...prevData,
-              ["employeeSaveDrawer"]: true,
+              ["clientSaveDrawer"]: true,
             }))
           }
         >
@@ -341,7 +332,7 @@ const Employee = () => {
       <Divider mt={2} mb={2} />
       <RenderWithLoading loading={loading}>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
-          {employees.map((m) => (
+          {clients.map((m) => (
             <Button
               key={m.id}
               variant={"outline"}
@@ -364,64 +355,64 @@ const Employee = () => {
           ))}
         </SimpleGrid>
       </RenderWithLoading>
-      <EmployeeDrawer
-        isOpen={isOpen["employeeSaveDrawer"]}
+      <ClientDrawer
+        isOpen={isOpen["clientSaveDrawer"]}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
-            ["employeeSaveDrawer"]: isOpen,
+            ["clientSaveDrawer"]: isOpen,
           }))
         }
-        updateEmployeeField={updateEmployeeState}
+        updateClientState={updateClientState}
         handleOnSave={handleOnSave}
       />
-      <EmployeeDrawer
+      <ClientDrawer
         isEdit
-        isOpen={isOpen["employeeEditDrawer"]}
-        employeeName={employeeState?.employeeName}
-        employeeEmail={employeeState?.employeeEmail}
-        employeePhoneNumber={employeeState?.employeePhoneNumber}
+        isOpen={isOpen["clientEditDrawer"]}
+        clientName={clientState.clientName}
+        clientEmail={clientState.clientEmail}
+        clientPhoneNumber={clientState.clientPhoneNumber}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
-            ["employeeEditDrawer"]: isOpen,
+            ["clientEditDrawer"]: isOpen,
           }))
         }
-        updateEmployeeField={updateEmployeeState}
+        updateClientState={updateClientState}
         handleOnSave={handleOnSaveEdit}
       />
       <DeleteAlert
         handleOnDelete={handleConfirmDelete}
-        isOpen={isOpen["employeeDeleteAlert"]}
+        isOpen={isOpen["clientDeleteAlert"]}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
-            ["employeeDeleteAlert"]: isOpen,
+            ["clientDeleteAlert"]: isOpen,
           }))
         }
       />
       <CustomModal
         header="Detalhes"
-        isOpen={isOpen["employeeShowModal"]}
+        isOpen={isOpen["clientShowModal"]}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
-            ["employeeShowModal"]: isOpen,
+            ["clientShowModal"]: isOpen,
           }))
         }
       >
         <Stack>
           <HStack>
             <Heading size={"sm"}>Nome:</Heading>
-            <Text>{employeeState.employeeName}</Text>
+            <Text>{clientState.clientName}</Text>
           </HStack>
           <HStack>
             <Heading size={"sm"}>Email:</Heading>
-            <Text isTruncated>{employeeState.employeeEmail}</Text>
+            <Text isTruncated>{clientState.clientEmail}</Text>
           </HStack>
           <HStack>
             <Heading size={"sm"}>Celular:</Heading>
-            <Text>{employeeState.employeePhoneNumber}</Text>
+            <Text>{clientState.clientPhoneNumber}</Text>
           </HStack>
           <Divider mt={2} mb={2} />
           <HStack justify={"end"}>
@@ -438,4 +429,4 @@ const Employee = () => {
   );
 };
 
-export default Employee;
+export default Client;

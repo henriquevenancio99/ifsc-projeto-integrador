@@ -1,12 +1,9 @@
+import { IContact } from "./contact";
+
 export interface IEmployee {
   id: string;
   name: string;
   contact: IContact;
-}
-
-export interface IContact {
-  email: string;
-  phoneNumber: string;
 }
 
 export interface ICreateEmployee {

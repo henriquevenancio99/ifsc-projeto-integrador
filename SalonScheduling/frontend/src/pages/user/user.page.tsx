@@ -177,12 +177,8 @@ const User = () => {
   };
 
   const handleConfirmDelete = () => {
-    setIsOpen((prevData) => ({
-      ...prevData,
-      ["userDeleteAlert"]: false,
-    }));
-
     setLoading(true);
+
     deleteUser(userState.userId)
       .then((response) => {
         if (response.ok) {
@@ -223,6 +219,10 @@ const User = () => {
         });
       })
       .finally(() => {
+        setIsOpen((prevData) => ({
+          ...prevData,
+          ["userDeleteAlert"]: false,
+        }));
         setLoading(false);
       });
   };
