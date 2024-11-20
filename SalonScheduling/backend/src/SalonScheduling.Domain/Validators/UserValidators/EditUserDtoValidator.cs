@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SalonScheduling.Domain.Dtos.User;
 
-namespace SalonScheduling.Data.Identity
+namespace SalonScheduling.Domain.Validators.UserValidators
 {
     public class EditUserDtoValidator : AbstractValidator<EditUserDto>
     {

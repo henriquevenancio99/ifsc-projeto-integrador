@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
-using SalonScheduling.Domain.Commands;
+using SalonScheduling.Domain.Commands.EmployeeCommands;
 using SalonScheduling.Domain.Interfaces.Repositories;
 
-namespace SalonScheduling.Domain.Validators
+namespace SalonScheduling.Domain.Validators.EmployeeValidators
 {
     public class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCommand>
     {
@@ -15,16 +15,15 @@ namespace SalonScheduling.Domain.Validators
                 .NotNull();
 
             RuleFor(r => r.Contact)
-                .ChildRules(c => 
-                { 
+                .ChildRules(c =>
+                {
                     c.RuleFor(r => r!.Email)
                         .EmailAddress()
-                        .MustAsync(async (_, email, _) => 
+                        .MustAsync(async (_, email, _) =>
                             await employeeRepository.ExistsBy(e => e.Contact.Email == email) is false)
                         .WithMessage(w => $"'{nameof(w.Email)}' informado já existe.");
                 })
                 .When(w => w.Contact is not null);
         }
-
     }
 }

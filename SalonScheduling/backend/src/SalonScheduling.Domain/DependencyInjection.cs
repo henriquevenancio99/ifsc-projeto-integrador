@@ -20,6 +20,8 @@ namespace SalonScheduling.Domain
         private static IServiceCollection AddCommandsHandlers(this IServiceCollection services)
         {
             services.AddScoped<IEmployeeCommandsHandlers, EmployeeCommandsHandlers>();
+            services.AddScoped<IClientCommandsHandlers, ClientCommandsHandlers>();
+            services.AddScoped<IUserCommandsHandlers, UserCommandsHandlers>();
 
             return services;
         }
@@ -27,6 +29,7 @@ namespace SalonScheduling.Domain
         private static IServiceCollection AddQueriesHandlers(this IServiceCollection services)
         {
             services.AddScoped<IEmployeeQueriesHandlers, EmployeeQueriesHandlers>();
+            services.AddScoped<IClientQueriesHandlers, ClientQueriesHandlers>();
 
             return services;
         }

@@ -8,7 +8,7 @@ using SalonScheduling.CrossCutting.Helpers;
 using SalonScheduling.Domain.Dtos.Role;
 using SalonScheduling.Domain.Dtos.User;
 using SalonScheduling.Domain.Interfaces;
-using SalonScheduling.Domain.Validators;
+using SalonScheduling.Domain.Validators.UserValidators;
 using System.Data;
 
 namespace SalonScheduling.Data.Identity

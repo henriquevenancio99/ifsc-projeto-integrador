@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using SalonScheduling.Domain.Dtos.User;
 
-namespace SalonScheduling.Domain.Validators
+namespace SalonScheduling.Domain.Validators.UserValidators
 {
     public class ResetPasswordRequestBodyDtoValidator : AbstractValidator<ResetPasswordRequestBodyDto>
     {

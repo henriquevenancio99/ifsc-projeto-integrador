@@ -2,7 +2,7 @@ using AutoFixture;
 using FluentAssertions;
 using FluentValidation.Results;
 using Moq;
-using SalonScheduling.Domain.Commands;
+using SalonScheduling.Domain.Commands.EmployeeCommands;
 using SalonScheduling.Domain.Commands.Handlers;
 using SalonScheduling.Domain.Interfaces;
 using SalonScheduling.Domain.Interfaces.Repositories;

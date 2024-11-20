@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
-using SalonScheduling.Domain.Commands;
+using SalonScheduling.Domain.Commands.EmployeeCommands;
 
-namespace SalonScheduling.Domain.Validators
+namespace SalonScheduling.Domain.Validators.EmployeeValidators
 {
     public class UpdateEmployeeCommandValidator : AbstractValidator<UpdateEmployeeCommand>
     {

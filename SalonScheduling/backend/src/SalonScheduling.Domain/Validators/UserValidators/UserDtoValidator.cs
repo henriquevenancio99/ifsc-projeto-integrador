@@ -2,7 +2,7 @@
 using SalonScheduling.Domain.Dtos.User;
 using SalonScheduling.Domain.Interfaces;
 
-namespace SalonScheduling.Data.Identity
+namespace SalonScheduling.Domain.Validators.UserValidators
 {
     public class UserDtoValidator : AbstractValidator<UserDto>
     {

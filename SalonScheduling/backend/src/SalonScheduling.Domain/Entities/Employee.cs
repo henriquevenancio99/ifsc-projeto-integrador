@@ -1,4 +1,4 @@
-﻿using SalonScheduling.Domain.Commands;
+﻿using SalonScheduling.Domain.Commands.EmployeeCommands;
 using SalonScheduling.Domain.ValueObjects;
 
 namespace SalonScheduling.Domain.Entities
@@ -9,14 +9,16 @@ namespace SalonScheduling.Domain.Entities
         public required Contact Contact { get; set; }
         public Guid? UserId { get; set; }
 
-        public static Employee CreateBy(CreateEmployeeCommand command) => new() 
-        { 
-            Name = command.Name!, Contact = command.Contact! 
+        public static Employee CreateBy(CreateEmployeeCommand command) => new()
+        {
+            Name = command.Name!,
+            Contact = command.Contact!
         };
 
-        public static Employee CreateBy(UpdateEmployeeCommand command) => new() 
-        { 
-            Name = command.Name, Contact = command.Contact 
+        public static Employee CreateBy(UpdateEmployeeCommand command) => new()
+        {
+            Name = command.Name,
+            Contact = command.Contact
         };
     }
 }

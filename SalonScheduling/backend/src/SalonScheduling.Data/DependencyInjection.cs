@@ -32,6 +32,7 @@ namespace SalonScheduling.Data
         public static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IUserRefreshTokenRepository, UserRefreshTokenRepository>();
         }
     }
