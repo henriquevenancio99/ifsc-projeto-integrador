@@ -198,7 +198,7 @@ namespace SalonScheduling.Data.Identity
             await EmailHelper.SendEmail(
                 configuration.GetEmailCredentials(),
                 toEmail: requestBody.Email,
-                subject: "Alterar a senha",
+                subject: "Recuperação de Acesso à Conta",
                 message
             );
 
@@ -290,10 +290,32 @@ namespace SalonScheduling.Data.Identity
                 return $"Informe o token a seguir para alterar a senha: {token}";
 
             var encodedToken = Uri.EscapeDataString(token);
-
             var resetPasswordUrl = requestBody.ClientUriToResetPassword + $"?token={encodedToken}&email={requestBody.Email}";
 
-            return $"Clique no link a seguir para alterar a senha: {resetPasswordUrl}";
+            var message = $@"
+                <html>
+                <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+                    <div style='max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px;'>
+                        <h2 style='color: #007bff;'>Recuperação de Acesso à Conta</h2>
+                        <p>Olá,</p>
+                        <p>Recebemos uma solicitação para redefinir a senha da sua conta. Caso tenha sido você, clique no botão abaixo para criar uma nova senha:</p>
+                        <p style='text-align: center;'>
+                            <a href='{resetPasswordUrl}' 
+                               style='display: inline-block; background-color: #007bff; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 16px;'>
+                                Redefinir Senha
+                            </a>
+                        </p>
+                        <p>Se você não solicitou a redefinição, ignore este e-mail. Sua senha permanecerá a mesma.</p>
+                        <p style='margin-top: 20px; font-size: 12px; color: #666;'>Este link expira em 24 horas por motivos de segurança.</p>
+                        <hr style='margin: 20px 0; border: none; border-top: 1px solid #ddd;' />
+                        <footer style='font-size: 12px; color: #999; text-align: center;'>
+                            &copy; 2024 Salon Scheduling.
+                        </footer>
+                    </div>
+                </body>
+                </html>";
+
+            return message;
         }
 
         private async Task<(string Token, string RefreshToken)> GetTokens(User identityUser)

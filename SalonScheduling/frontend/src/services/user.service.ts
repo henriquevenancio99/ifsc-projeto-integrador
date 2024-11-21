@@ -66,7 +66,7 @@ export const forgetPassword = (email: string): Promise<Response> => {
     },
     body: JSON.stringify({
       email,
-      clientUriToResetPassword: "http:localhost:5173/reset-password",
+      clientUriToResetPassword: "http://localhost:5173/reset-password",
     }),
   });
 };

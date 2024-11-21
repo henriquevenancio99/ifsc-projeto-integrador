@@ -16,7 +16,10 @@ namespace SalonScheduling.CrossCutting.Helpers
                 EnableSsl = true,
             };
 
-            await smtpClient.SendMailAsync(new MailMessage(emailCredentials.Email, toEmail, subject, message));
+            await smtpClient.SendMailAsync(new MailMessage(emailCredentials.Email, toEmail, subject, message)
+            {
+                IsBodyHtml = true
+            });
         }
     }
 }
