@@ -33,6 +33,8 @@ namespace SalonScheduling.Data
         {
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<ISalonServiceRepository, SalonServiceRepository>();
+            services.AddScoped<ISalonServiceTypeRepository, SalonServiceTypeRepository>();
             services.AddScoped<IUserRefreshTokenRepository, UserRefreshTokenRepository>();
         }
     }

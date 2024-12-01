@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SalonScheduling.Data;
@@ -11,9 +12,11 @@ using SalonScheduling.Data;
 namespace SalonScheduling.Data.Migrations
 {
     [DbContext(typeof(SalonSchedulingContext))]
-    partial class SalonSchedulingContextModelSnapshot : ModelSnapshot
+    [Migration("20241130202346_CreateTable_SalonService")]
+    partial class CreateTable_SalonService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -501,7 +504,7 @@ namespace SalonScheduling.Data.Migrations
 
             modelBuilder.Entity("SalonScheduling.Domain.Entities.Client", b =>
                 {
-                    b.OwnsOne("SalonScheduling.Domain.Entities.Client.Contact#SalonScheduling.Domain.ValueObjects.Contact", "Contact", b1 =>
+                    b.OwnsOne("SalonScheduling.Domain.ValueObjects.Contact", "Contact", b1 =>
                         {
                             b1.Property<Guid>("ClientId")
                                 .HasColumnType("uuid")
@@ -518,7 +521,7 @@ namespace SalonScheduling.Data.Migrations
 
                             b1.HasKey("ClientId");
 
-                            b1.ToTable("client", (string)null);
+                            b1.ToTable("client");
 
                             b1.WithOwner()
                                 .HasForeignKey("ClientId")
@@ -536,7 +539,7 @@ namespace SalonScheduling.Data.Migrations
                         .HasForeignKey("UserId")
                         .HasConstraintName("fk_employee_users_user_id");
 
-                    b.OwnsOne("SalonScheduling.Domain.Entities.Employee.Contact#SalonScheduling.Domain.ValueObjects.Contact", "Contact", b1 =>
+                    b.OwnsOne("SalonScheduling.Domain.ValueObjects.Contact", "Contact", b1 =>
                         {
                             b1.Property<Guid>("EmployeeId")
                                 .HasColumnType("uuid")
@@ -553,7 +556,7 @@ namespace SalonScheduling.Data.Migrations
 
                             b1.HasKey("EmployeeId");
 
-                            b1.ToTable("employee", (string)null);
+                            b1.ToTable("employee");
 
                             b1.WithOwner()
                                 .HasForeignKey("EmployeeId")
