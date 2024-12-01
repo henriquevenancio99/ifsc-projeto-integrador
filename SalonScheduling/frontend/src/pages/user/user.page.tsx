@@ -25,7 +25,7 @@ import { MdAdd } from "react-icons/md";
 import { DeleteAlert } from "../../components/common/delete-alert";
 import { BiEdit, BiShow, BiTrash } from "react-icons/bi";
 import { CustomModal } from "../../components/common/custom-modal";
-import IErrorResponse from "../../types/error-response";
+import IErrorResponse from "../../types/common/error-response";
 import { getErrorMessages } from "../../utils/error-response";
 import { RenderWithLoading } from "../../components/common/render-with-loading";
 import { getUsername, refreshToken } from "../../services/auth.service";
@@ -112,7 +112,6 @@ const User = () => {
   }, [isOpen]);
 
   const handleOnShow = (user: IUser) => {
-    console.log(user);
     updateUserState("userId", user?.id);
     updateUserState("username", user?.username);
     updateUserState("selectedRoles", user?.roles);

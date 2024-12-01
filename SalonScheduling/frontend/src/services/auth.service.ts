@@ -1,4 +1,4 @@
-import { IToken } from "../types/token";
+import { IToken } from "../types/common/token";
 import { BASE_URL } from "../utils/config";
 
 export const isAuthenticated = () => {
@@ -42,6 +42,8 @@ export const fetchWithAuth = async (
       };
 
       response = await fetch(`${BASE_URL}${endpoint}`, options);
+    } else {
+      window.location.href = "/login";
     }
   }
 

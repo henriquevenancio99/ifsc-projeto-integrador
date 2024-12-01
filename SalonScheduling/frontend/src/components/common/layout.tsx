@@ -8,10 +8,17 @@ import {
   GridItem,
   Link,
 } from "@chakra-ui/react";
-import { MdMenu, MdWork, MdManageAccounts, MdMenuOpen, MdGroup } from "react-icons/md";
+import {
+  MdMenu,
+  MdWork,
+  MdManageAccounts,
+  MdMenuOpen,
+  MdGroup,
+} from "react-icons/md";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
 import { LogoutButton } from "./logout-button";
+import { FaCut } from "react-icons/fa";
 
 interface ILinkItem {
   name: string;
@@ -30,6 +37,11 @@ export const Layout = () => {
       name: "Funcionários",
       icon: <MdWork size={"2rem"} />,
       path: "/employees",
+    },
+    {
+      name: "Serviços",
+      icon: <FaCut size={"2rem"} />,
+      path: "/salon-services",
     },
     {
       name: "Clientes",

@@ -26,7 +26,7 @@ import { EmployeeDrawer } from "../../components/employee/emplyee-drawer";
 import { BiTrash, BiEdit, BiShow } from "react-icons/bi";
 import { CustomModal } from "../../components/common/custom-modal";
 import { getErrorMessages } from "../../utils/error-response";
-import IErrorResponse from "../../types/error-response";
+import IErrorResponse from "../../types/common/error-response";
 import { RenderWithLoading } from "../../components/common/render-with-loading";
 
 type DrawerKeys =
@@ -69,7 +69,6 @@ const Employee = () => {
       return;
     }
 
-    console.log("entrou pra buscar de novo: ", loading);
     setLoading(true);
 
     getAllEmployees()

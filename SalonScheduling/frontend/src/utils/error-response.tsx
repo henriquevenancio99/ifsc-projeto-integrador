@@ -1,4 +1,4 @@
-import IErrorResponse from "../types/error-response";
+import IErrorResponse from "../types/common/error-response";
 
 export const getErrorMessages = (data: IErrorResponse) => {
   return Object.keys(data.errors).map((field) =>

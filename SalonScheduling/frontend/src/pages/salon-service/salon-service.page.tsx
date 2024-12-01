@@ -12,14 +12,14 @@ import {
 } from "@chakra-ui/react";
 
 import {
-  createClient,
-  deleteClient,
-  editClient,
-  getAllClients,
-} from "../../services/client.service";
+  createSalonService,
+  deleteSalonService,
+  editSalonService,
+  getAllSalonServices,
+} from "../../services/salon-service.service";
 
 import { useEffect, useState } from "react";
-import { IClient, IClientState } from "../../types/client";
+import { ISalonService, ISalonServiceState } from "../../types/salon-service";
 import { MdAdd } from "react-icons/md";
 import { DeleteAlert } from "../../components/common/delete-alert";
 import { BiEdit, BiShow, BiTrash } from "react-icons/bi";
@@ -27,27 +27,35 @@ import { CustomModal } from "../../components/common/custom-modal";
 import IErrorResponse from "../../types/common/error-response";
 import { getErrorMessages } from "../../utils/error-response";
 import { RenderWithLoading } from "../../components/common/render-with-loading";
-import { ClientDrawer } from "../../components/client/client-drawer";
+import { SalonServiceDrawer } from "../../components/salon-service/salon-service-drawer";
 
-const Client = () => {
+const SalonService = () => {
   const toast = useToast();
-  const [clients, setClients] = useState<IClient[]>([]);
+  const [salonServices, setSalonServices] = useState<ISalonService[]>([]);
   const [isOpen, setIsOpen] = useState<{ [key: string]: boolean }>({
-    clientSaveDrawer: false,
-    clientEditDrawer: false,
-    clientDeleteAlert: false,
-    clientShowModal: false,
+    salonServiceSaveDrawer: false,
+    salonServiceEditDrawer: false,
+    salonServiceDeleteAlert: false,
+    salonServiceShowModal: false,
   });
 
-  const [clientState, setClientState] = useState<IClientState>({
-    clientId: "",
-    clientName: "",
-    clientEmail: "",
-    clientPhoneNumber: "",
-  });
+  const [salonServiceState, setSalonServiceState] =
+    useState<ISalonServiceState>({
+      salonServiceId: "",
+      salonServiceName: "",
+      salonServicePrice: 0,
+      salonServicePriceFormatted: "R$",
+      salonServiceDescription: "",
+      salonServiceTypes: {},
+      salonServiceTime: "",
+      selectedSalonServiceTypes: [],
+    });
 
-  const updateClientState = (field: keyof IClientState, value: any) => {
-    setClientState((prevData) => ({
+  const updateSalonServiceState = (
+    field: keyof ISalonServiceState,
+    value: any
+  ) => {
+    setSalonServiceState((prevData) => ({
       ...prevData,
       [field]: value,
     }));
@@ -57,32 +65,36 @@ const Client = () => {
 
   useEffect(() => {
     if (
-      isOpen["clientSaveDrawer"] ||
-      isOpen["clientEditDrawer"] ||
-      isOpen["clientDeleteAlert"] ||
-      isOpen["clientShowModal"]
+      isOpen["salonServiceSaveDrawer"] ||
+      isOpen["salonServiceEditDrawer"] ||
+      isOpen["salonServiceDeleteAlert"] ||
+      isOpen["salonServiceShowModal"]
     ) {
       return;
     }
 
-    updateClientState("clientId", "");
-    updateClientState("clientName", "");
-    updateClientState("clientEmail", "");
-    updateClientState("clientPhoneNumber", "");
+    updateSalonServiceState("salonServiceId", "");
+    updateSalonServiceState("salonServiceName", "");
+    updateSalonServiceState("salonServicePrice", 0);
+    updateSalonServiceState("salonServicePriceFormatted", "R$");
+    updateSalonServiceState("salonServiceTypes", {});
+    updateSalonServiceState("selectedSalonServiceTypes", []);
+    updateSalonServiceState("salonServiceTime", "");
+    updateSalonServiceState("salonServiceDescription", "");
 
     setLoading(true);
 
-    getAllClients()
+    getAllSalonServices()
       .then((response) => {
         if (response.ok) {
           response
             .json()
-            .then((data: IClient[]) => {
-              setClients(data);
+            .then((data: ISalonService[]) => {
+              setSalonServices(data);
             })
             .catch(() => {
               toast({
-                title: "Não foi possível obter os clientes.",
+                title: "Não foi possível obter os Serviços.",
                 status: "error",
                 duration: 3000,
                 isClosable: true,
@@ -90,7 +102,7 @@ const Client = () => {
             });
         } else {
           toast({
-            title: "Não foi possível obter os clientes.",
+            title: "Não foi possível obter os Serviços.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -99,7 +111,7 @@ const Client = () => {
       })
       .catch(() => {
         toast({
-          title: "Erro ao obter os clientes.",
+          title: "Erro ao obter os Serviços.",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -110,37 +122,54 @@ const Client = () => {
       });
   }, [isOpen]);
 
-  const handleOnShow = (client: IClient) => {
-    updateClientState("clientId", client?.id);
-    updateClientState("clientName", client?.name);
-    updateClientState("clientEmail", client?.contact.email);
-    updateClientState("clientPhoneNumber", client?.contact.phoneNumber);
+  const handleOnShow = (salonService: ISalonService) => {
+    updateSalonServiceState("salonServiceId", salonService?.id);
+    updateSalonServiceState("salonServiceName", salonService?.name);
+    updateSalonServiceState("salonServicePrice", salonService?.price);
+    updateSalonServiceState(
+      "salonServicePriceFormatted",
+      salonService?.priceFormatted
+    );
+    updateSalonServiceState(
+      "salonServiceTypes",
+      salonService?.serviceTypes ?? {}
+    );
+    updateSalonServiceState(
+      "selectedSalonServiceTypes",
+      salonService?.serviceTypes ? Object.keys(salonService?.serviceTypes) : []
+    );
+    updateSalonServiceState("salonServiceTime", salonService?.serviceTime);
+    updateSalonServiceState(
+      "salonServiceDescription",
+      salonService?.description
+    );
 
     setIsOpen((prevData) => ({
       ...prevData,
-      ["clientShowModal"]: true,
+      ["salonServiceShowModal"]: true,
     }));
   };
 
   const handleOnSave = () => {
-    createClient({
-      name: clientState.clientName,
-      contact: {
-        email: clientState.clientEmail,
-        phoneNumber: clientState.clientPhoneNumber,
-      },
+    createSalonService({
+      name: salonServiceState.salonServiceName,
+      price: salonServiceState.salonServicePrice,
+      serviceTypes: salonServiceState.salonServiceTypes,
+      selectedSalonServiceTypes: salonServiceState.selectedSalonServiceTypes,
+      serviceTime: salonServiceState.salonServiceTime,
+      description: salonServiceState.salonServiceDescription,
     })
       .then((response) => {
         if (response.ok) {
           toast({
-            title: "Cliente cadastrado com sucesso.",
+            title: "Serviço cadastrado com sucesso.",
             status: "success",
             duration: 3000,
             isClosable: true,
           });
           setIsOpen((prevData) => ({
             ...prevData,
-            ["clientSaveDrawer"]: false,
+            ["salonServiceSaveDrawer"]: false,
           }));
         } else if (response.status === 403) {
           toast({
@@ -154,7 +183,7 @@ const Client = () => {
             const errorMessages = getErrorMessages(data);
 
             toast({
-              title: "Não foi possível cadastrar o cliente.",
+              title: "Não foi possível cadastrar o Serviço.",
               status: "error",
               duration: 3000,
               description: errorMessages,
@@ -163,7 +192,7 @@ const Client = () => {
           });
         } else {
           toast({
-            title: "Não foi possível cadastrar o cliente.",
+            title: "Não foi possível cadastrar o Serviço.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -172,7 +201,7 @@ const Client = () => {
       })
       .catch((error) => {
         toast({
-          title: "Erro ao cadastrar cliente.",
+          title: "Erro ao cadastrar Serviço.",
           status: "error",
           description: error,
           duration: 3000,
@@ -184,11 +213,11 @@ const Client = () => {
   const handleConfirmDelete = () => {
     setLoading(true);
 
-    deleteClient(clientState.clientId)
+    deleteSalonService(salonServiceState.salonServiceId)
       .then((response) => {
         if (response.ok) {
           toast({
-            title: "Cliente exluído com sucesso.",
+            title: "Serviço exluído com sucesso.",
             status: "success",
             duration: 3000,
             isClosable: true,
@@ -198,7 +227,7 @@ const Client = () => {
             const errorMessages = getErrorMessages(data);
 
             toast({
-              title: "Não foi possível excluir o cliente.",
+              title: "Não foi possível excluir o Serviço.",
               status: "error",
               duration: 3000,
               description: errorMessages,
@@ -207,7 +236,7 @@ const Client = () => {
           });
         } else {
           toast({
-            title: "Não foi possível excluir cliente.",
+            title: "Não foi possível excluir Serviço.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -216,7 +245,7 @@ const Client = () => {
       })
       .catch((error) => {
         toast({
-          title: "Erro ao excluir cliente.",
+          title: "Erro ao excluir Serviço.",
           status: "error",
           description: error,
           duration: 3000,
@@ -226,7 +255,7 @@ const Client = () => {
       .finally(() => {
         setIsOpen((prevData) => ({
           ...prevData,
-          ["clientDeleteAlert"]: false,
+          ["salonServiceDeleteAlert"]: false,
         }));
 
         setLoading(false);
@@ -236,54 +265,55 @@ const Client = () => {
   const handleOnDelete = () => {
     setIsOpen((prevData) => ({
       ...prevData,
-      ["clientShowModal"]: false,
+      ["salonServiceShowModal"]: false,
     }));
     setIsOpen((prevData) => ({
       ...prevData,
-      ["clientDeleteAlert"]: true,
+      ["salonServiceDeleteAlert"]: true,
     }));
   };
 
   const handleOnEdit = () => {
     setIsOpen((prevData) => ({
       ...prevData,
-      ["clientShowModal"]: false,
+      ["salonServiceShowModal"]: false,
     }));
     setIsOpen((prevData) => ({
       ...prevData,
-      ["clientEditDrawer"]: true,
+      ["salonServiceEditDrawer"]: true,
     }));
   };
 
   const handleOnSaveEdit = () => {
     setLoading(true);
 
-    editClient({
-      id: clientState.clientId,
-      name: clientState.clientName,
-      contact: {
-        email: clientState.clientEmail,
-        phoneNumber: clientState.clientPhoneNumber,
-      },
+    editSalonService({
+      id: salonServiceState.salonServiceId,
+      name: salonServiceState.salonServiceName,
+      price: salonServiceState.salonServicePrice,
+      serviceTypes: salonServiceState.salonServiceTypes,
+      selectedSalonServiceTypes: salonServiceState.selectedSalonServiceTypes,
+      serviceTime: salonServiceState.salonServiceTime,
+      description: salonServiceState.salonServiceDescription,
     })
       .then((response) => {
         if (response.ok) {
           toast({
-            title: "Cliente editado com sucesso.",
+            title: "Serviço editado com sucesso.",
             status: "success",
             duration: 3000,
             isClosable: true,
           });
           setIsOpen((prevData) => ({
             ...prevData,
-            ["clientEditDrawer"]: false,
+            ["salonServiceEditDrawer"]: false,
           }));
         } else if (response.status == 400) {
           response.json().then((data: IErrorResponse) => {
             const errorMessages = getErrorMessages(data);
 
             toast({
-              title: "Não foi possível editar o cliente.",
+              title: "Não foi possível editar o Serviço.",
               status: "error",
               duration: 3000,
               description: errorMessages,
@@ -292,7 +322,7 @@ const Client = () => {
           });
         } else {
           toast({
-            title: "Não foi possível editar cliente.",
+            title: "Não foi possível editar Serviço.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -301,7 +331,7 @@ const Client = () => {
       })
       .catch((error) => {
         toast({
-          title: "Erro ao editar cliente.",
+          title: "Erro ao editar Serviço.",
           status: "error",
           description: error,
           duration: 3000,
@@ -316,13 +346,13 @@ const Client = () => {
   return (
     <>
       <HStack justifyContent={"space-between"} spacing={2}>
-        <Heading>Clientes</Heading>
+        <Heading>Serviços</Heading>
         <Button
           leftIcon={<MdAdd size={"2rem"} />}
           onClick={() =>
             setIsOpen((prevData) => ({
               ...prevData,
-              ["clientSaveDrawer"]: true,
+              ["salonServiceSaveDrawer"]: true,
             }))
           }
         >
@@ -332,7 +362,7 @@ const Client = () => {
       <Divider mt={2} mb={2} />
       <RenderWithLoading loading={loading}>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 2 }} spacing={4}>
-          {clients.map((m) => (
+          {salonServices.map((m) => (
             <Button
               key={m.id}
               variant={"outline"}
@@ -355,64 +385,81 @@ const Client = () => {
           ))}
         </SimpleGrid>
       </RenderWithLoading>
-      <ClientDrawer
-        isOpen={isOpen["clientSaveDrawer"]}
+      <SalonServiceDrawer
+        isOpen={isOpen["salonServiceSaveDrawer"]}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
-            ["clientSaveDrawer"]: isOpen,
+            ["salonServiceSaveDrawer"]: isOpen,
           }))
         }
-        updateClientState={updateClientState}
+        salonServiceTypes={salonServiceState.salonServiceTypes}
+        selectedSalonServiceTypes={salonServiceState.selectedSalonServiceTypes}
+        updateSalonServiceState={updateSalonServiceState}
         handleOnSave={handleOnSave}
       />
-      <ClientDrawer
+      <SalonServiceDrawer
         isEdit
-        isOpen={isOpen["clientEditDrawer"]}
-        clientName={clientState.clientName}
-        clientEmail={clientState.clientEmail}
-        clientPhoneNumber={clientState.clientPhoneNumber}
+        isOpen={isOpen["salonServiceEditDrawer"]}
+        salonServiceName={salonServiceState.salonServiceName}
+        salonServicePrice={salonServiceState.salonServicePrice}
+        salonServiceTime={salonServiceState.salonServiceTime}
+        salonServiceDescription={salonServiceState.salonServiceDescription}
+        salonServiceTypes={salonServiceState.salonServiceTypes}
+        selectedSalonServiceTypes={salonServiceState.selectedSalonServiceTypes}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
-            ["clientEditDrawer"]: isOpen,
+            ["salonServiceEditDrawer"]: isOpen,
           }))
         }
-        updateClientState={updateClientState}
+        updateSalonServiceState={updateSalonServiceState}
         handleOnSave={handleOnSaveEdit}
       />
       <DeleteAlert
         handleOnDelete={handleConfirmDelete}
-        isOpen={isOpen["clientDeleteAlert"]}
+        isOpen={isOpen["salonServiceDeleteAlert"]}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
-            ["clientDeleteAlert"]: isOpen,
+            ["salonServiceDeleteAlert"]: isOpen,
           }))
         }
       />
       <CustomModal
         header="Detalhes"
-        isOpen={isOpen["clientShowModal"]}
+        isOpen={isOpen["salonServiceShowModal"]}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
-            ["clientShowModal"]: isOpen,
+            ["salonServiceShowModal"]: isOpen,
           }))
         }
       >
         <Stack>
           <HStack>
             <Heading size={"sm"}>Nome:</Heading>
-            <Text>{clientState.clientName}</Text>
+            <Text>{salonServiceState.salonServiceName}</Text>
           </HStack>
           <HStack>
-            <Heading size={"sm"}>Email:</Heading>
-            <Text isTruncated>{clientState.clientEmail}</Text>
+            <Heading size={"sm"}>Valor:</Heading>
+            <Text isTruncated>
+              {salonServiceState.salonServicePriceFormatted}
+            </Text>
           </HStack>
           <HStack>
-            <Heading size={"sm"}>Celular:</Heading>
-            <Text>{clientState.clientPhoneNumber}</Text>
+            <Heading size={"sm"}>Tipos:</Heading>
+            <Text>
+              {Object.values(salonServiceState.salonServiceTypes).join(", ")}
+            </Text>
+          </HStack>
+          <HStack>
+            <Heading size={"sm"}>Duração:</Heading>
+            <Text isTruncated>{salonServiceState.salonServiceTime}</Text>
+          </HStack>
+          <HStack>
+            <Heading size={"sm"}>Descrição:</Heading>
+            <Text isTruncated>{salonServiceState.salonServiceDescription}</Text>
           </HStack>
           <Divider mt={2} mb={2} />
           <HStack justify={"end"}>
@@ -429,4 +476,4 @@ const Client = () => {
   );
 };
 
-export default Client;
+export default SalonService;
