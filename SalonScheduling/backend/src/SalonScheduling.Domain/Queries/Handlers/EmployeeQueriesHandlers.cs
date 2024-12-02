@@ -7,7 +7,7 @@ namespace SalonScheduling.Domain.Queries.Handlers
     {
         public async Task<EmployeeQuery[]> Handle()
         {
-            var result = await employeeRepository.GetAllAsNoTracking();
+            var result = await employeeRepository.GetAllWithIncludesAsNoTracking();
 
             return result
                 ?.Select(employee => new EmployeeQuery(
@@ -15,7 +15,8 @@ namespace SalonScheduling.Domain.Queries.Handlers
                     employee.Name, 
                     employee.Contact, 
                     employee.CreatedAt, 
-                    employee.UpdatedAt
+                    employee.UpdatedAt,
+                    employee.SalonServices?.Select(s => s.Name).ToArray()
                 ))
                 .ToArray() ?? [];
         }
@@ -25,7 +26,13 @@ namespace SalonScheduling.Domain.Queries.Handlers
             var employee = await employeeRepository.GetById(id);
 
             return employee is not null 
-                ? new(employee.Id, employee.Name, employee.Contact, employee.CreatedAt, employee.UpdatedAt) 
+                ? new(
+                    employee.Id, 
+                    employee.Name, 
+                    employee.Contact, 
+                    employee.CreatedAt, 
+                    employee.UpdatedAt,
+                    employee.SalonServices?.Select(s => s.Name).ToArray()) 
                 : default;
         }
     }

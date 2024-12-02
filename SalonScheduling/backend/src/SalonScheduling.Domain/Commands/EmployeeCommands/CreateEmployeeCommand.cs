@@ -7,5 +7,6 @@ namespace SalonScheduling.Domain.Commands.EmployeeCommands
         Contact? Contact = default,
         bool? CreateUser = default,
         string? UserPassword = default,
-        string[]? UserRoles = default) : BaseCommand;
+        string[]? UserRoles = default,
+        Guid[]? SalonServicesIds = default) : BaseCommand;
 }

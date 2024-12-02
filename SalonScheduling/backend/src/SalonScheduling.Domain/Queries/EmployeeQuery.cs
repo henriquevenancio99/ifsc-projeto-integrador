@@ -7,5 +7,6 @@ namespace SalonScheduling.Domain.Queries
         string Name, 
         Contact Contact, 
         DateTimeOffset CreatedAt, 
-        DateTimeOffset UpdatedAt) : BaseQuery;
+        DateTimeOffset UpdatedAt, 
+        string[]? SalonServices) : BaseQuery;
 }

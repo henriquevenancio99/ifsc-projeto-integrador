@@ -9,6 +9,7 @@ namespace SalonScheduling.Domain.Entities
         public SalonServiceType[] ServiceTypes { get; set; } = [];
         public TimeOnly? ServiceTime { get; set; }
         public string? Description { get; set; }
+        public ICollection<Employee>? Employees { get; set; }
 
         public static SalonService CreateBy(CreateSalonServiceCommand command) => new()
         {

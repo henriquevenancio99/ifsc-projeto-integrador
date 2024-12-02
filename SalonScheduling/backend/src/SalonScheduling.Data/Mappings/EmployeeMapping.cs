@@ -9,6 +9,9 @@ namespace SalonScheduling.Data.Mappings
         {
             base.Configure(builder);
             builder.OwnsOne(p => p.Contact);
+            builder
+                .HasMany(h => h.SalonServices)
+                .WithMany(w => w.Employees);
         }
     }
 }

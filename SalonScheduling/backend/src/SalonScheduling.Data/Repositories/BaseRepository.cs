@@ -15,8 +15,14 @@ namespace SalonScheduling.Data.Repositories
         public async Task<TEntity?> GetById(Guid id) =>
             await dbSet.FindAsync(id);
 
+        public async Task<List<TEntity>> GetByFilters(Expression<Func<TEntity, bool>> predicate) => 
+            await dbSet.Where(predicate).ToListAsync();
+
         public async Task Create(TEntity entity) =>
             await dbSet.AddAsync(entity);
+
+        public async Task Update(TEntity entity) => 
+            await Task.FromResult(dbSet.Update(entity));
 
         public async Task Delete(Expression<Func<TEntity, bool>> predicate) =>
             await dbSet.Where(predicate).ExecuteDeleteAsync();

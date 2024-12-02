@@ -2,5 +2,9 @@
 
 namespace SalonScheduling.Domain.Commands.EmployeeCommands
 {
-    public record UpdateEmployeeCommand(Guid Id, string Name, Contact Contact) : BaseCommand;
+    public record UpdateEmployeeCommand(
+        Guid Id, 
+        string Name, 
+        Contact Contact,
+        Guid[]? SalonServicesIds) : BaseCommand;
 }

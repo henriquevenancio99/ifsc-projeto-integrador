@@ -7,6 +7,14 @@ namespace SalonScheduling.Data.Repositories
     public class SalonServiceRepository(SalonSchedulingContext context) 
         : BaseRepository<SalonService>(context), ISalonServiceRepository
     {
+        public async Task<List<SalonService>> GetByIds(Guid[]? salonServicesIds)
+        {
+            if (salonServicesIds is null || salonServicesIds.Length == 0)
+                return [];
+
+            return await GetByFilters(w => salonServicesIds.Contains(w.Id));
+        }
+
         public async Task<int> UpdateAndCommit(Guid id, SalonService salonService)
         {
             return await dbSet

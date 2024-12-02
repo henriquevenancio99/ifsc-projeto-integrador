@@ -22,7 +22,7 @@ namespace SalonScheduling.Domain.Commands.Handlers
             }
 
             var employee = Employee.CreateBy(command);
-            await employeeRepository.Create(employee);
+            await employeeRepository.CreateWithSalonServices(employee, command.SalonServicesIds);
 
             if (await CreateEmployeeUser(command) is false)
                 return default;
@@ -42,14 +42,20 @@ namespace SalonScheduling.Domain.Commands.Handlers
                 return false;
             }
 
-            var employee = Employee.CreateBy(command);
+            var employee = await employeeRepository.GetByIdWithSalonService(command.Id);
 
-            isValid = await employeeRepository.UpdateAndCommit(command.Id, employee) > 0;
+            if (employee is null)
+            {
+                ValidationFailures.Add(new(nameof(command.Id), "Funcionário não existe"));
+                return false;
+            }
 
-            if(isValid is false)
-                ValidationFailures.Add(new(nameof(command.Id), "Usuário não existe"));
+            employee.UpdateProperties(command);
+            await employeeRepository.UpdateWithSalonServices(employee, command.SalonServicesIds);
 
-            return isValid;
+            await employeeRepository.Commit();
+
+            return true;
         }
 
         public virtual async Task<(bool IsValid, List<ValidationFailure> Errors)> Validate(CreateEmployeeCommand command)

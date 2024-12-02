@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SalonScheduling.Data;
@@ -11,9 +12,11 @@ using SalonScheduling.Data;
 namespace SalonScheduling.Data.Migrations
 {
     [DbContext(typeof(SalonSchedulingContext))]
-    partial class SalonSchedulingContextModelSnapshot : ModelSnapshot
+    [Migration("20241202040443_AlterTable_Employee_BindWithSalonServices")]
+    partial class AlterTable_Employee_BindWithSalonServices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
