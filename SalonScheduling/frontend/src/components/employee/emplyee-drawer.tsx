@@ -5,6 +5,8 @@ import { CustomDrawer } from "../common/custom-drawer";
 import { useEffect, useState } from "react";
 import { getAllRoles } from "../../services/role.service";
 import { IEmployeeState } from "../../types/employee";
+import { ISalonServiceOptions } from "../../types/salon-service";
+import { getAllSalonServices } from "../../services/salon-service.service";
 
 interface IProps {
   isEdit?: boolean;
@@ -13,6 +15,7 @@ interface IProps {
   employeeEmail?: string;
   employeePhoneNumber?: string;
   selectedRoles?: string[];
+  selectedSalonServices?: string[];
   updateEmployeeField: (field: keyof IEmployeeState, value: any) => void;
   setIsOpen: (isOpen: boolean) => void;
   handleOnSave: () => void;
@@ -25,30 +28,71 @@ export const EmployeeDrawer = ({
   employeeEmail,
   employeePhoneNumber,
   selectedRoles,
+  selectedSalonServices,
   updateEmployeeField,
   setIsOpen,
   handleOnSave,
 }: IProps) => {
   const [roles, setRoles] = useState<IRole[]>([]);
+  const [salonServices, setSalonServices] = useState<ISalonServiceOptions[]>(
+    []
+  );
   const [createUser, setCreateUser] = useState(false);
+  const [bindSalonServices, setBindSalonServices] = useState(false);
   const toast = useToast();
 
   const header = isEdit ? "Editar funcionário" : "Novo funcionário";
 
   useEffect(() => {
-    if (!isOpen || isEdit) return;
+    if (!isOpen) return;
 
-    getAllRoles()
+    if (!isEdit) {
+      getAllRoles()
+        .then((response) => {
+          if (response.ok) {
+            response
+              .json()
+              .then((data: IRole[]) => {
+                setRoles(data);
+              })
+              .catch(() => {
+                toast({
+                  title: "Não foi possível obter as permissões de funcionário.",
+                  status: "error",
+                  duration: 3000,
+                  isClosable: true,
+                });
+              });
+          } else {
+            toast({
+              title: "Não foi possível obter as permissões de funcionário.",
+              status: "error",
+              duration: 3000,
+              isClosable: true,
+            });
+          }
+        })
+        .catch(() => {
+          toast({
+            title: "Erro ao obter as permissões de funcionário.",
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+          });
+        });
+    }
+
+    getAllSalonServices()
       .then((response) => {
         if (response.ok) {
           response
             .json()
-            .then((data: IRole[]) => {
-              setRoles(data);
+            .then((data: ISalonServiceOptions[]) => {
+              setSalonServices(data);
             })
             .catch(() => {
               toast({
-                title: "Não foi possível obter as permissões de funcionário.",
+                title: "Não foi possível obter os serviços.",
                 status: "error",
                 duration: 3000,
                 isClosable: true,
@@ -56,7 +100,7 @@ export const EmployeeDrawer = ({
             });
         } else {
           toast({
-            title: "Não foi possível obter as permissões de funcionário.",
+            title: "Não foi possível obter os serviços.",
             status: "error",
             duration: 3000,
             isClosable: true,
@@ -65,7 +109,7 @@ export const EmployeeDrawer = ({
       })
       .catch(() => {
         toast({
-          title: "Erro ao obter as permissões de funcionário.",
+          title: "Erro ao obter os serviços.",
           status: "error",
           duration: 3000,
           isClosable: true,
@@ -74,6 +118,7 @@ export const EmployeeDrawer = ({
 
     return () => {
       setCreateUser(false);
+      setBindSalonServices(false);
     };
   }, [isOpen]);
 
@@ -174,6 +219,48 @@ export const EmployeeDrawer = ({
             )}
           </>
         )}
+
+        <>
+          {!isEdit && (
+            <Stack>
+              <Switch
+                checked={createUser}
+                onChange={(e) => setBindSalonServices(e.target.checked)}
+              >
+                Deseja vincular serviços?
+              </Switch>
+            </Stack>
+          )}
+          {(isEdit || bindSalonServices) && (
+            <Stack>
+              <Text>Serviços:</Text>
+              <Select
+                required
+                placeholder="Selecione os serviços"
+                isMulti
+                value={
+                  selectedSalonServices &&
+                  salonServices
+                    .filter((f) => selectedSalonServices.includes(f.id))
+                    .map((m) => ({
+                      label: m.name,
+                      value: m.id,
+                    }))
+                }
+                onChange={(selectedOptions) =>
+                  updateEmployeeField(
+                    "selectedSalonServices",
+                    selectedOptions.map((m) => m.value)
+                  )
+                }
+                options={salonServices.map((m) => ({
+                  label: m.name,
+                  value: m.id,
+                }))}
+              />
+            </Stack>
+          )}
+        </>
       </Stack>
     </CustomDrawer>
   );

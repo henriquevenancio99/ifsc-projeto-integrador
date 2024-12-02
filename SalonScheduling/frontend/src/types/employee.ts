@@ -4,6 +4,7 @@ export interface IEmployee {
   id: string;
   name: string;
   contact: IContact;
+  salonServices: string[];
 }
 
 export interface ICreateEmployee {
@@ -12,6 +13,14 @@ export interface ICreateEmployee {
   createUser: boolean;
   userPassword?: string;
   userRoles?: string[];
+  salonServicesIds?: string[];
+}
+
+export interface IUpdateEmployee {
+  id: string;
+  name: string;
+  contact: IContact;
+  salonServicesIds: string[];
 }
 
 export interface IEmployeeState {
@@ -21,4 +30,6 @@ export interface IEmployeeState {
   employeePhoneNumber: string;
   password: string;
   selectedRoles: string[];
+  salonServices: string[];
+  selectedSalonServices: string[];
 }

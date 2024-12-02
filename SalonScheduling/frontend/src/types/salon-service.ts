@@ -28,3 +28,8 @@ export interface ISalonServiceState {
   salonServiceDescription: string;
   selectedSalonServiceTypes: string[];
 }
+
+export interface ISalonServiceOptions {
+  id: string;
+  name: string;
+}

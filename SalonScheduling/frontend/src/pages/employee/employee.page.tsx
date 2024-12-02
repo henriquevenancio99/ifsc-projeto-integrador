@@ -57,6 +57,8 @@ const Employee = () => {
     employeePhoneNumber: "",
     password: "",
     selectedRoles: [],
+    salonServices: [],
+    selectedSalonServices: [],
   });
 
   useEffect(() => {
@@ -119,6 +121,7 @@ const Employee = () => {
       createUser: !!employeeState.password,
       userPassword: employeeState.password,
       userRoles: employeeState.selectedRoles,
+      salonServicesIds: employeeState.selectedSalonServices,
     })
       .then((response) => {
         if (response.ok) {
@@ -254,6 +257,7 @@ const Employee = () => {
         email: employeeState.employeeEmail,
         phoneNumber: employeeState.employeePhoneNumber,
       },
+      salonServicesIds: employeeState.selectedSalonServices,
     })
       .then((response) => {
         if (response.ok) {
@@ -307,6 +311,7 @@ const Employee = () => {
     updateEmployeeState("employeeName", employee?.name);
     updateEmployeeState("employeeEmail", employee?.contact.email);
     updateEmployeeState("employeePhoneNumber", employee?.contact.phoneNumber);
+    updateEmployeeState("salonServices", employee?.salonServices);
 
     setIsOpen((prevData) => ({
       ...prevData,
@@ -380,6 +385,7 @@ const Employee = () => {
         employeeName={employeeState?.employeeName}
         employeeEmail={employeeState?.employeeEmail}
         employeePhoneNumber={employeeState?.employeePhoneNumber}
+        selectedSalonServices={employeeState?.selectedSalonServices}
         setIsOpen={(isOpen) =>
           setIsOpen((prevData) => ({
             ...prevData,
@@ -421,6 +427,10 @@ const Employee = () => {
           <HStack>
             <Heading size={"sm"}>Celular:</Heading>
             <Text>{employeeState.employeePhoneNumber}</Text>
+          </HStack>
+          <HStack>
+            <Heading size={"sm"}>Serviços:</Heading>
+            <Text>{employeeState.salonServices.join(", ")}</Text>
           </HStack>
           <Divider mt={2} mb={2} />
           <HStack justify={"end"}>
