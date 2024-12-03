@@ -16,6 +16,7 @@ import {
   TagCloseButton,
   Divider,
   IconButton,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { CustomDrawer } from "../common/custom-drawer";
 import { ISalonServiceState } from "../../types/salon-service";
@@ -234,7 +235,7 @@ export const SalonServiceDrawer = ({
       </CustomDrawer>
 
       <AlertDialog
-        size={"md"}
+        size={{ base: "xs", md: "lg" }}
         isOpen={isOpenNewSalonServiceType}
         leastDestructiveRef={cancelRef}
         onClose={() => setIsOpenNewSalonServiceType(false)}
@@ -264,14 +265,16 @@ export const SalonServiceDrawer = ({
                 <Divider mt={4} />
                 <Text>Tipos de serviço disponíveis:</Text>
                 <HStack>
+                <SimpleGrid columns={{ base: 2, md: 3 }} spacing={4}>
                   {Object.entries(salonServiceTypes ?? {}).map(
                     ([key, value]) => (
-                      <Tag key={key}>
+                      <Tag key={key} justifyContent={"space-between"}>
                         <TagLabel>{value}</TagLabel>
                         <TagCloseButton onClick={() => removeOption(key)} />
                       </Tag>
                     )
                   )}
+                  </SimpleGrid>
                 </HStack>
               </Stack>
             </AlertDialogBody>
