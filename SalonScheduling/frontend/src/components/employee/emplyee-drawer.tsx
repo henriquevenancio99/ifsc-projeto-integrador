@@ -1,12 +1,27 @@
-import { Stack, Input, Text, useToast, Switch } from "@chakra-ui/react";
+import {
+  Stack,
+  Input,
+  Text,
+  useToast,
+  Switch,
+  Checkbox,
+  CheckboxGroup,
+  HStack,
+  IconButton,
+  SimpleGrid,
+  Divider,
+} from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
 import { IRole } from "../../types/role";
 import { CustomDrawer } from "../common/custom-drawer";
 import { useEffect, useState } from "react";
 import { getAllRoles } from "../../services/role.service";
-import { IEmployeeState } from "../../types/employee";
+import { IEmployeeState, IWorkShift } from "../../types/employee";
 import { ISalonServiceOptions } from "../../types/salon-service";
 import { getAllSalonServices } from "../../services/salon-service.service";
+import { MdAdd } from "react-icons/md";
+import { weekDays } from "../../utils/extensions";
+import { EmployeeAvailability } from "./employee-availability";
 
 interface IProps {
   isEdit?: boolean;
@@ -16,6 +31,7 @@ interface IProps {
   employeePhoneNumber?: string;
   selectedRoles?: string[];
   selectedSalonServices?: string[];
+  availability?: Record<string, IWorkShift[]>;
   updateEmployeeField: (field: keyof IEmployeeState, value: any) => void;
   setIsOpen: (isOpen: boolean) => void;
   handleOnSave: () => void;
@@ -29,6 +45,7 @@ export const EmployeeDrawer = ({
   employeePhoneNumber,
   selectedRoles,
   selectedSalonServices,
+  availability,
   updateEmployeeField,
   setIsOpen,
   handleOnSave,
@@ -39,7 +56,52 @@ export const EmployeeDrawer = ({
   );
   const [createUser, setCreateUser] = useState(false);
   const [bindSalonServices, setBindSalonServices] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const toast = useToast();
+
+  const handleAddAvailability = () => {
+    if (selectedDays.length === 0 || !startTime || !endTime) {
+      toast({
+        title: "Informe os dias da semana e o intervalo",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    const updatedAvailability = { ...availability };
+
+    selectedDays.forEach((day) => {
+      if (!updatedAvailability[day]) {
+        updatedAvailability[day] = [];
+      }
+      updatedAvailability[day].push({ startTime, endTime });
+    });
+
+    updateEmployeeField("availability", updatedAvailability);
+
+    setSelectedDays([]);
+    setStartTime("");
+    setEndTime("");
+  };
+
+  const removeWorkShift = (day: string, index: number) => {
+    const updatedAvailability = { ...availability };
+
+    if (updatedAvailability[day]) {
+      updatedAvailability[day] = updatedAvailability[day].filter(
+        (_, i) => i !== index
+      );
+      if (updatedAvailability[day].length === 0) {
+        delete updatedAvailability[day];
+      }
+    }
+
+    updateEmployeeField("availability", updatedAvailability);
+  };
 
   const header = isEdit ? "Editar funcionário" : "Novo funcionário";
 
@@ -159,7 +221,7 @@ export const EmployeeDrawer = ({
             required
             type="tel"
             placeholder="Informe o celular"
-            value={employeePhoneNumber}
+            value={employeePhoneNumber ?? ""}
             onChange={(e) =>
               updateEmployeeField("employeePhoneNumber", e.target.value)
             }
@@ -261,6 +323,46 @@ export const EmployeeDrawer = ({
             </Stack>
           )}
         </>
+        <Stack>
+          <Divider mb={2} />
+          <Text>
+            Informe os turnos de trabalho para os dias da semana selecionados:
+          </Text>
+          <CheckboxGroup
+            value={selectedDays}
+            onChange={(values) => setSelectedDays(values as string[])}
+          >
+            <SimpleGrid columns={{ base: 2, md: 3, lg: 5, xl: 7 }} spacing={4}>
+              {weekDays.map((day) => (
+                <Checkbox key={day} value={day}>
+                  {day.split(":")[1]}
+                </Checkbox>
+              ))}
+            </SimpleGrid>
+          </CheckboxGroup>
+          <HStack mt={4}>
+            <Input
+              type="time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            />
+            <Input
+              type="time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+            <IconButton
+              icon={<MdAdd size={"2rem"} />}
+              aria-label=""
+              onClick={handleAddAvailability}
+            />
+          </HStack>
+          <EmployeeAvailability
+            isOpen
+            availability={availability}
+            removeWorkShift={removeWorkShift}
+          />
+        </Stack>
       </Stack>
     </CustomDrawer>
   );

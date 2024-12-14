@@ -32,7 +32,7 @@ import { ClientDrawer } from "../../components/client/client-drawer";
 const Client = () => {
   const toast = useToast();
   const [clients, setClients] = useState<IClient[]>([]);
-  const [isOpen, setIsOpen] = useState<{ [key: string]: boolean }>({
+  const [isOpen, setIsOpen] = useState<Record<string, boolean>>({
     clientSaveDrawer: false,
     clientEditDrawer: false,
     clientDeleteAlert: false,

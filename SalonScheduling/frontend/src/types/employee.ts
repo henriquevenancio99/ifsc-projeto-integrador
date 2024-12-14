@@ -1,10 +1,16 @@
 import { IContact } from "./contact";
 
+export interface IWorkShift {
+  startTime: string;
+  endTime: string;
+}
+
 export interface IEmployee {
   id: string;
   name: string;
   contact: IContact;
   salonServices: string[];
+  availability: Record<string, IWorkShift[]>;
 }
 
 export interface ICreateEmployee {
@@ -14,6 +20,7 @@ export interface ICreateEmployee {
   userPassword?: string;
   userRoles?: string[];
   salonServicesIds?: string[];
+  availability?: Record<string, IWorkShift[]>;
 }
 
 export interface IUpdateEmployee {
@@ -21,6 +28,7 @@ export interface IUpdateEmployee {
   name: string;
   contact: IContact;
   salonServicesIds: string[];
+  availability?: Record<string, IWorkShift[]>;
 }
 
 export interface IEmployeeState {
@@ -32,4 +40,5 @@ export interface IEmployeeState {
   selectedRoles: string[];
   salonServices: string[];
   selectedSalonServices: string[];
+  availability?: Record<string, IWorkShift[]>;
 }

@@ -33,7 +33,7 @@ import { getUsername, refreshToken } from "../../services/auth.service";
 const User = () => {
   const toast = useToast();
   const [users, setUsers] = useState<IUser[]>([]);
-  const [isOpen, setIsOpen] = useState<{ [key: string]: boolean }>({
+  const [isOpen, setIsOpen] = useState<Record<string, boolean>>({
     userSaveDrawer: false,
     userEditDrawer: false,
     userDeleteAlert: false,

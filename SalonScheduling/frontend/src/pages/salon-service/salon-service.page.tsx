@@ -32,7 +32,7 @@ import { SalonServiceDrawer } from "../../components/salon-service/salon-service
 const SalonService = () => {
   const toast = useToast();
   const [salonServices, setSalonServices] = useState<ISalonService[]>([]);
-  const [isOpen, setIsOpen] = useState<{ [key: string]: boolean }>({
+  const [isOpen, setIsOpen] = useState<Record<string, boolean>>({
     salonServiceSaveDrawer: false,
     salonServiceEditDrawer: false,
     salonServiceDeleteAlert: false,
