@@ -1,4 +1,5 @@
-﻿using SalonScheduling.Domain.ValueObjects;
+﻿using SalonScheduling.Domain.Dtos.Employee;
+using SalonScheduling.Domain.ValueObjects;
 
 namespace SalonScheduling.Domain.Commands.EmployeeCommands
 {
@@ -6,5 +7,6 @@ namespace SalonScheduling.Domain.Commands.EmployeeCommands
         Guid Id, 
         string Name, 
         Contact Contact,
-        Guid[]? SalonServicesIds) : BaseCommand;
+        Guid[]? SalonServicesIds,
+        Dictionary<string, WorkShiftDto[]>? Availability) : BaseCommand;
 }

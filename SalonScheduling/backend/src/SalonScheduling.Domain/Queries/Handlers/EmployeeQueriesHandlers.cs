@@ -16,7 +16,8 @@ namespace SalonScheduling.Domain.Queries.Handlers
                     employee.Contact, 
                     employee.CreatedAt, 
                     employee.UpdatedAt,
-                    employee.SalonServices?.Select(s => s.Name).ToArray()
+                    employee.SalonServices?.ToDictionary(key => key.Id, value => value.Name),
+                    employee.Availability
                 ))
                 .ToArray() ?? [];
         }
@@ -32,7 +33,8 @@ namespace SalonScheduling.Domain.Queries.Handlers
                     employee.Contact, 
                     employee.CreatedAt, 
                     employee.UpdatedAt,
-                    employee.SalonServices?.Select(s => s.Name).ToArray()) 
+                    employee.SalonServices?.ToDictionary(key => key.Id, value => value.Name),
+                    employee.Availability)
                 : default;
         }
     }

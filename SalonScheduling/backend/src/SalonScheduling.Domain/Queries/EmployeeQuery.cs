@@ -1,4 +1,5 @@
-﻿using SalonScheduling.Domain.ValueObjects;
+﻿using SalonScheduling.Domain.Dtos.Employee;
+using SalonScheduling.Domain.ValueObjects;
 
 namespace SalonScheduling.Domain.Queries
 {
@@ -8,5 +9,6 @@ namespace SalonScheduling.Domain.Queries
         Contact Contact, 
         DateTimeOffset CreatedAt, 
         DateTimeOffset UpdatedAt, 
-        string[]? SalonServices) : BaseQuery;
+        Dictionary<Guid, string>? SalonServices,
+        Dictionary<string, WorkShiftDto[]>? Availability) : BaseQuery;
 }

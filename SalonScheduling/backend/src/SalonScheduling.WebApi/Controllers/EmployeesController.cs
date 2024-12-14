@@ -57,7 +57,13 @@ namespace SalonScheduling.WebApi.Controllers
             [FromRoute] Guid id, 
             [FromBody] UpdateEmployeeRequestBodyDto requestBody)
         {
-            var command = new UpdateEmployeeCommand(id, requestBody.Name, requestBody.Contact, requestBody.SalonServicesIds);
+            var command = new UpdateEmployeeCommand(
+                id, 
+                requestBody.Name, 
+                requestBody.Contact, 
+                requestBody.SalonServicesIds, 
+                requestBody.Availability
+            );
 
             return await handler.Handle(command) 
                 ? Ok() 

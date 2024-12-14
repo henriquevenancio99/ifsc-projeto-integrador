@@ -2,5 +2,10 @@
 
 namespace SalonScheduling.Domain.Dtos.Employee
 {
-    public record UpdateEmployeeRequestBodyDto(string Name, Contact Contact, Guid[]? SalonServicesIds);
+    public record UpdateEmployeeRequestBodyDto(
+        string Name, 
+        Contact Contact, 
+        Guid[]? SalonServicesIds, 
+        Dictionary<string, WorkShiftDto[]>? Availability
+    );
 }

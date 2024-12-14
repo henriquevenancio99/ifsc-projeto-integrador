@@ -1,4 +1,5 @@
 ﻿using SalonScheduling.Domain.Commands.EmployeeCommands;
+using SalonScheduling.Domain.Dtos.Employee;
 using SalonScheduling.Domain.ValueObjects;
 
 namespace SalonScheduling.Domain.Entities
@@ -9,11 +10,13 @@ namespace SalonScheduling.Domain.Entities
         public required Contact Contact { get; set; }
         public Guid? UserId { get; set; }
         public ICollection<SalonService>? SalonServices { get; set; }
+        public Dictionary<string, WorkShiftDto[]>? Availability { get; set; }
 
         public static Employee CreateBy(CreateEmployeeCommand command) => new()
         {
             Name = command.Name!,
-            Contact = command.Contact!
+            Contact = command.Contact!,
+            Availability = command.Availability
         };
 
         public static Employee CreateBy(UpdateEmployeeCommand command) => new()
@@ -27,6 +30,7 @@ namespace SalonScheduling.Domain.Entities
         {
             Name = command.Name;
             Contact = command.Contact;
+            Availability = command.Availability;
         }
     }
 }
