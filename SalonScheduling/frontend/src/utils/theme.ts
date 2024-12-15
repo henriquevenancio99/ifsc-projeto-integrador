@@ -137,6 +137,28 @@ const theme = extendTheme({
         },
       }),
     },
+    Checkbox: {
+      baseStyle: (props: any) => ({
+        control: {
+          _checked: {
+            bg:
+              props.colorMode === "dark"
+                ? colors.dark.primary
+                : colors.light.primary,
+            borderColor:
+              props.colorMode === "dark"
+                ? colors.dark.secondary
+                : colors.light.secondary,
+            _hover: {
+              bg:
+                props.colorMode === "dark"
+                  ? colors.dark.secondary
+                  : colors.light.secondary,
+            },
+          },
+        },
+      }),
+    },
   },
 });
 
