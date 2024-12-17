@@ -72,6 +72,16 @@ export const EmployeeDrawer = ({
       return;
     }
 
+    if (endTime <= startTime) {
+      toast({
+        title: "O horário inicial deve ser menor que o horário final",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
     const updatedAvailability = { ...availability };
 
     selectedDays.forEach((day) => {
