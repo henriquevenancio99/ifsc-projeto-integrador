@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SalonScheduling.Data;
@@ -13,9 +14,11 @@ using SalonScheduling.Domain.Dtos.Employee;
 namespace SalonScheduling.Data.Migrations
 {
     [DbContext(typeof(SalonSchedulingContext))]
-    partial class SalonSchedulingContextModelSnapshot : ModelSnapshot
+    [Migration("20250201010516_AlterTable_Scheduling_RemoveColumnTitle")]
+    partial class AlterTable_Scheduling_RemoveColumnTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

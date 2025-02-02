@@ -9,8 +9,9 @@ namespace SalonScheduling.Domain.Entities
         public required string Name { get; set; }
         public required Contact Contact { get; set; }
         public Guid? UserId { get; set; }
-        public ICollection<SalonService>? SalonServices { get; set; }
         public Dictionary<string, WorkShiftDto[]>? Availability { get; set; }
+        public ICollection<SalonService>? SalonServices { get; set; }
+        public ICollection<Scheduling>? Schedulings { get; set; }
 
         public static Employee CreateBy(CreateEmployeeCommand command) => new()
         {

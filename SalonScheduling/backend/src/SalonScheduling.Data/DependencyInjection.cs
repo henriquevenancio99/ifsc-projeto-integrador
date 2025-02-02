@@ -36,6 +36,7 @@ namespace SalonScheduling.Data
             services.AddScoped<ISalonServiceRepository, SalonServiceRepository>();
             services.AddScoped<ISalonServiceTypeRepository, SalonServiceTypeRepository>();
             services.AddScoped<IUserRefreshTokenRepository, UserRefreshTokenRepository>();
+            services.AddScoped<ISchedulingRepository, SchedulingRepository>();
         }
     }
 }

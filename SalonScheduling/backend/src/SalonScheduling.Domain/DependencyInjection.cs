@@ -23,6 +23,7 @@ namespace SalonScheduling.Domain
             services.AddScoped<IClientCommandsHandlers, ClientCommandsHandlers>();
             services.AddScoped<IUserCommandsHandlers, UserCommandsHandlers>();
             services.AddScoped<ISalonServiceCommandsHandlers, SalonServiceCommandsHandlers>();
+            services.AddScoped<ISchedulingCommandsHandlers, SchedulingCommandsHandlers>();
 
             return services;
         }
@@ -33,6 +34,7 @@ namespace SalonScheduling.Domain
             services.AddScoped<IClientQueriesHandlers, ClientQueriesHandlers>();
             services.AddScoped<ISalonServiceQueriesHandlers, SalonServiceQueriesHandlers>();
             services.AddScoped<ISalonServiceTypeQueriesHandlers, SalonServiceTypeQueriesHandlers>();
+            services.AddScoped<ISchedulingQueriesHandlers, SchedulingQueriesHandlers>();
 
             return services;
         }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SalonScheduling.Data;
@@ -13,9 +14,11 @@ using SalonScheduling.Domain.Dtos.Employee;
 namespace SalonScheduling.Data.Migrations
 {
     [DbContext(typeof(SalonSchedulingContext))]
-    partial class SalonSchedulingContextModelSnapshot : ModelSnapshot
+    [Migration("20250128024435_CreateTable_Scheduling")]
+    partial class CreateTable_Scheduling
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -494,6 +497,11 @@ namespace SalonScheduling.Data.Migrations
                     b.Property<DateTimeOffset>("Start")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("start");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("title");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAddOrUpdate()

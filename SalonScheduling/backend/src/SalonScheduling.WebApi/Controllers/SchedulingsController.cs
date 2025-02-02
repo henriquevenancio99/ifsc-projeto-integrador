@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SalonScheduling.CrossCutting.Constants;
-using SalonScheduling.Domain.Commands.EmployeeCommands;
-using SalonScheduling.Domain.Dtos.Employee;
+using SalonScheduling.Domain.Commands.SchedulingCommands;
 using SalonScheduling.Domain.Dtos.Scheduling;
 using SalonScheduling.Domain.Interfaces.CommandsHandlers;
 using SalonScheduling.Domain.Interfaces.QueriesHandlers;
@@ -13,19 +12,19 @@ using SalonScheduling.WebApi.Extensions;
 namespace SalonScheduling.WebApi.Controllers
 {
     [ApiController]
-    public class EmployeesController : ControllerBase
+    public class SchedulingsController : ControllerBase
     {
         [HttpGet("[controller]")]
         [Authorize(Roles = Roles.Employee)]
-        [ProducesResponseType(typeof(EmployeeQuery[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAll([FromServices] IEmployeeQueriesHandlers handler) =>
+        [ProducesResponseType(typeof(SchedulingQuery[]), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll([FromServices] ISchedulingQueriesHandlers handler) =>
             Ok(await handler.Handle());
 
         [HttpGet("[controller]/{id}")]
         [Authorize(Roles = Roles.Employee)]
-        [ProducesResponseType(typeof(EmployeeQuery), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SchedulingQuery), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById([FromServices] IEmployeeQueriesHandlers handler, [FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromServices] ISchedulingQueriesHandlers handler, [FromRoute] Guid id)
         {
             var response = await handler.Handle(id);
 
@@ -39,12 +38,12 @@ namespace SalonScheduling.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> Create(
-            [FromServices] IEmployeeCommandsHandlers employeeHandlers, [FromBody] CreateEmployeeCommand requestBody)
+            [FromServices] ISchedulingCommandsHandlers handlers, [FromBody] CreateSchedulingCommand requestBody)
         {
-            var employeeId = await employeeHandlers.Handle(requestBody);
+            var employeeId = await handlers.Handle(requestBody);
 
-            if (employeeHandlers.HasValidationFailures)
-                return this.CustomBadRequest(employeeHandlers.ValidationFailures);
+            if (handlers.HasValidationFailures)
+                return this.CustomBadRequest(handlers.ValidationFailures);
 
             return Ok(employeeId);
         }
@@ -54,16 +53,17 @@ namespace SalonScheduling.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update(
-            [FromServices] IEmployeeCommandsHandlers handler, 
+            [FromServices] ISchedulingCommandsHandlers handler, 
             [FromRoute] Guid id, 
-            [FromBody] UpdateEmployeeRequestBodyDto requestBody)
+            [FromBody] UpdateSchedulingRequestBodyDto requestBody)
         {
-            var command = new UpdateEmployeeCommand(
+            var command = new UpdateSchedulingCommand(
                 id, 
-                requestBody.Name, 
-                requestBody.Contact, 
+                requestBody.ClientId, 
+                requestBody.EmployeesIds, 
                 requestBody.SalonServicesIds, 
-                requestBody.Availability
+                requestBody.Start, 
+                requestBody.End
             );
 
             return await handler.Handle(command) 
@@ -75,7 +75,7 @@ namespace SalonScheduling.WebApi.Controllers
         [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete(
-            [FromServices] IEmployeeRepository employeeRepository, [FromRoute] Guid id)
+            [FromServices] ISchedulingRepository employeeRepository, [FromRoute] Guid id)
         {
             await employeeRepository.Delete(d => d.Id == id);
 

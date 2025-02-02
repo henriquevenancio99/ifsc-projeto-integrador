@@ -7,6 +7,7 @@ namespace SalonScheduling.Domain.Entities
     {
         public required string Name { get; set; }
         public required Contact Contact { get; set; }
+        public ICollection<Scheduling>? Schedulings { get; set; }
 
         public static Client CreateBy(CreateClientCommand command) => new()
         {
