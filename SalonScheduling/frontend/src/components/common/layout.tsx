@@ -14,6 +14,7 @@ import {
   MdManageAccounts,
   MdMenuOpen,
   MdGroup,
+  MdSchedule,
 } from "react-icons/md";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
@@ -29,9 +30,14 @@ interface ILinkItem {
 export const Layout = () => {
   const linkItems: ILinkItem[] = [
     {
-      name: "Usuários",
-      icon: <MdManageAccounts size={"2rem"} />,
-      path: "/users",
+      name: "Agendamentos",
+      icon: <MdSchedule size={"2rem"} />,
+      path: "/schedulings",
+    },
+    {
+      name: "Clientes",
+      icon: <MdGroup size={"2rem"} />,
+      path: "/clients",
     },
     {
       name: "Funcionários",
@@ -44,9 +50,9 @@ export const Layout = () => {
       path: "/salon-services",
     },
     {
-      name: "Clientes",
-      icon: <MdGroup size={"2rem"} />,
-      path: "/clients",
+      name: "Usuários",
+      icon: <MdManageAccounts size={"2rem"} />,
+      path: "/users",
     },
   ];
 
@@ -103,7 +109,7 @@ export const LayoutContent = ({ linkItems, children }: ILayoutContentProps) => {
         area={"nav"}
         bg={"gray.200"}
         borderRadius={4}
-        h={{ base: isOpen ? "90vh" : "auto", md: "88vh" }}
+        h={{ base: isOpen ? "100vh" : "auto", md: "88vh" }}
       >
         <VStack
           alignItems={"start"}

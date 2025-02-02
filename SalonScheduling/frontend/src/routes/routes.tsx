@@ -6,6 +6,7 @@ import ForgetPassword from "../pages/user/forget-password.page";
 import ResetPassword from "../pages/user/reset-password.page";
 import Client from "../pages/client/client.page";
 import SalonService from "../pages/salon-service/salon-service.page";
+import Scheduling from "../pages/scheduling/scheduling.page";
 
 const Login = lazy(() => import("../pages/user/login.page"));
 const Home = lazy(() => import("../pages/home.page"));
@@ -33,6 +34,7 @@ export const Routes = (
       <Route path="/employees" element={<Employee />} />
       <Route path="/salon-services" element={<SalonService />} />
       <Route path="/clients" element={<Client />} />
+      <Route path="/schedulings" element={<Scheduling />} />
     </Route>
   </>
 );

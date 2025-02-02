@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+
 export const sortRecordByNumericPart = <TValue>(
   record: Record<string, TValue>
 ) => {
@@ -23,3 +25,7 @@ export const weekDays = [
   "6:Sábado",
   "7:Domingo",
 ];
+
+export const generateGuid = (): string => {
+  return uuidv4();
+};
